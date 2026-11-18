@@ -1,0 +1,70 @@
+<resources>
+    <string name="app_name">IronBody</string>
+
+    <!-- Navigation & Titles -->
+    <string name="screen_exercises_title">IronBody</string>
+    <string name="screen_add_exercise_title">New Exercise</string>
+    <string name="screen_edit_exercise_title">Edit Exercise</string>
+
+    <!-- Muscle Sections -->
+    <string name="section_chest">Chest</string>
+    <string name="section_back">Back</string>
+    <string name="section_biceps">Biceps</string>
+    <string name="section_triceps">Triceps</string>
+    <string name="section_forearms">Forearms</string>
+    <string name="section_abs">Abs</string>
+    <string name="section_shoulders">Shoulders</string>
+    <string name="section_legs">Legs</string>
+    <string name="label_section">Target Muscle Group / Section</string>
+
+    <!-- Search & Filter -->
+    <string name="search_exercises_hint">Search exercises or notes…</string>
+    <string name="clear_search">Clear search</string>
+    <string name="filter_all">All</string>
+    <string name="filter_kg">KG</string>
+    <string name="filter_lbs">LBS</string>
+
+    <!-- Empty State -->
+    <string name="empty_exercises_title">No exercises in this section</string>
+    <string name="empty_exercises_subtitle">Tap + to add your first exercise to this section!</string>
+    <string name="empty_search_title">No matching exercises</string>
+    <string name="empty_search_subtitle">Try checking your spelling or search terms.</string>
+    <string name="action_add_first_exercise">Add First Exercise</string>
+
+    <!-- Exercise Form -->
+    <string name="label_exercise_name">Exercise Name</string>
+    <string name="hint_exercise_name">e.g. Incline Dumbbell Press</string>
+    <string name="label_weight">Current Weight</string>
+    <string name="hint_weight">0.0</string>
+    <string name="label_unit">Unit</string>
+    <string name="label_note">Notes (Optional)</string>
+    <string name="hint_note">Add form cues, seat settings, or warm-up tips…</string>
+    <string name="action_save">Save Exercise</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_delete">Delete</string>
+
+    <!-- Form Validation Errors -->
+    <string name="error_empty_name">Please enter an exercise name</string>
+    <string name="error_empty_weight">Please specify a weight</string>
+    <string name="error_invalid_weight">Weight must be a valid positive number</string>
+    <string name="error_negative_weight">Weight cannot be negative</string>
+
+    <!-- Exercise Item & Actions -->
+    <string name="action_decrease_weight">Decrease weight</string>
+    <string name="action_increase_weight">Increase weight</string>
+    <string name="action_drag_to_reorder">Drag handle to reorder</string>
+    <string name="action_add_exercise">Add Exercise</string>
+    <string name="exercise_deleted">Exercise deleted</string>
+    <string name="action_undo">Undo</string>
+
+    <!-- Image Actions -->
+    <string name="action_select_photo">Select Photo</string>
+    <string name="action_change_photo">Change Photo</string>
+    <string name="action_remove_photo">Remove Photo</string>
+    <string name="cd_exercise_image">Exercise photo</string>
+    <string name="cd_back_button">Navigate back</string>
+
+    <!-- Units -->
+    <string name="unit_kg">kg</string>
+    <string name="unit_lbs">lbs</string>
+</resources>

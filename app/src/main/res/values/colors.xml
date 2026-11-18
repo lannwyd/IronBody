@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark Palette Base -->
+    <color name="iron_bg_dark">#0E0E12</color>
+    <color name="iron_surface_dark">#16161E</color>
+    <color name="iron_surface_variant_dark">#1F1F2C</color>
+    <color name="iron_card_border_dark">#2A2A3C</color>
+
+    <!-- Electric Accents -->
+    <color name="iron_accent_lime">#CCFF00</color>
+    <color name="iron_accent_lime_dim">#99BF00</color>
+    <color name="iron_accent_orange">#FF6B00</color>
+
+    <!-- Alert / Delete -->
+    <color name="iron_error_red">#FF4D4D</color>
+</resources>

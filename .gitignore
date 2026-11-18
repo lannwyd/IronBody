@@ -1,0 +1,33 @@
+# Built application and bundle packages
+*.apk
+*.aar
+*.aab
+
+# Gradle build cache and generated files
+.gradle/
+build/
+app/build/
+
+# Local configuration (machine specific Android SDK path)
+local.properties
+
+# Android Studio / IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Log files
+*.log
+
+# Keystore / Signing files
+*.jks
+*.keystore
+
+# Kotlin & KSP caches
+.kotlin/
+.navigation/
+
+# OS generated files
+.DS_Store
+Thumbs.db
