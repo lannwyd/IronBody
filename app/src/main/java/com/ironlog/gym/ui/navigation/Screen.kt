@@ -11,4 +11,7 @@ sealed interface Screen {
         val exerciseId: Long? = null,
         val initialSection: String? = null
     ) : Screen
+
+    @Serializable
+    data object BodyWeight : Screen
 }

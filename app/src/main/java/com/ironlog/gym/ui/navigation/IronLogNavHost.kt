@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.ironlog.gym.ui.screens.bodyweight.BodyWeightScreen
 import com.ironlog.gym.ui.screens.exerciseEdit.ExerciseEditScreen
 import com.ironlog.gym.ui.screens.exercises.ExerciseListScreen
 
@@ -47,12 +48,23 @@ fun IronLogNavHost(
                 },
                 onNavigateToEditExercise = { exerciseId ->
                     navController.navigate(Screen.ExerciseEdit(exerciseId = exerciseId))
+                },
+                onNavigateToBodyWeight = {
+                    navController.navigate(Screen.BodyWeight)
                 }
             )
         }
 
         composable<Screen.ExerciseEdit> {
             ExerciseEditScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable<Screen.BodyWeight> {
+            BodyWeightScreen(
                 onNavigateBack = {
                     navController.popBackStack()
                 }

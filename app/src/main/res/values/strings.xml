@@ -39,7 +39,7 @@
     <string name="label_unit">Unit</string>
     <string name="label_note">Notes (Optional)</string>
     <string name="hint_note">Add form cues, seat settings, or warm-up tips…</string>
-    <string name="action_save">Save Exercise</string>
+    <string name="action_save">Save</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_delete">Delete</string>
 
@@ -67,4 +67,21 @@
     <!-- Units -->
     <string name="unit_kg">kg</string>
     <string name="unit_lbs">lbs</string>
+
+    <!-- Body Weight Tracking -->
+    <string name="screen_body_weight_title">Body Weight</string>
+    <string name="body_weight_add">Add Weight Entry</string>
+    <string name="body_weight_add_title">Log Body Weight</string>
+    <string name="body_weight_edit_title">Edit Body Weight</string>
+    <string name="body_weight_edit">Edit</string>
+    <string name="body_weight_label">Body Weight</string>
+    <string name="body_weight_date_label">Date</string>
+    <string name="body_weight_date_confirm">OK</string>
+    <string name="body_weight_add_receipt">Upload Scale Receipt</string>
+    <string name="body_weight_view_receipt">View receipt</string>
+    <string name="body_weight_receipt_cd">Scale receipt photo</string>
+    <string name="body_weight_note_hint">Morning / post-workout / fasted…</string>
+    <string name="body_weight_empty_title">No weight entries yet</string>
+    <string name="body_weight_empty_subtitle">Tap + to log your first body weight with a scale receipt.</string>
+    <string name="body_weight_nav_label">Body Weight</string>
 </resources>

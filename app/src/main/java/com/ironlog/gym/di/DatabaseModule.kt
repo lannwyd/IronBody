@@ -3,6 +3,7 @@ package com.ironlog.gym.di
 import android.content.Context
 import androidx.room.Room
 import com.ironlog.gym.data.local.IronLogDatabase
+import com.ironlog.gym.data.local.dao.BodyWeightDao
 import com.ironlog.gym.data.local.dao.ExerciseDao
 import dagger.Module
 import dagger.Provides
@@ -32,5 +33,10 @@ object DatabaseModule {
     @Provides
     fun provideExerciseDao(database: IronLogDatabase): ExerciseDao {
         return database.exerciseDao()
+    }
+
+    @Provides
+    fun provideBodyWeightDao(database: IronLogDatabase): BodyWeightDao {
+        return database.bodyWeightDao()
     }
 }
