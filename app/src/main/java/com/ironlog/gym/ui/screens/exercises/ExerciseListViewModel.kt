@@ -4,14 +4,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ironlog.gym.domain.model.Exercise
-import com.ironlog.gym.domain.model.MuscleSection
 import com.ironlog.gym.domain.repository.ExerciseRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,30 +25,6 @@ class ExerciseListViewModel @Inject constructor(
     private val _selectedSection = savedStateHandle.getStateFlow<String?>("selected_section", null)
     private val _selectedUnitFilter = savedStateHandle.getStateFlow<String?>("unit_filter", null)
     private val _recentlyDeleted = MutableStateFlow<Exercise?>(null)
-
-    init {
-        // Seed default starter exercises across sections if database is empty
-        viewModelScope.launch {
-            val existing = exerciseRepository.getExercises().first()
-            if (existing.isEmpty()) {
-                seedInitialExercises()
-            }
-        }
-    }
-
-    private suspend fun seedInitialExercises() {
-        val starters = listOf(
-            Exercise(name = "Barbell Bench Press", weight = 60f, unit = "kg", section = MuscleSection.CHEST.id, note = "3 sets x 8-10 reps"),
-            Exercise(name = "Lat Pulldown", weight = 50f, unit = "kg", section = MuscleSection.BACK.id, note = "Wide grip, focus on lats"),
-            Exercise(name = "Dumbbell Bicep Curl", weight = 14f, unit = "kg", section = MuscleSection.BICEPS.id, note = "Supinated grip"),
-            Exercise(name = "Tricep Rope Pushdown", weight = 25f, unit = "kg", section = MuscleSection.TRICEPS.id, note = "Flaring out at the bottom"),
-            Exercise(name = "Seated Wrist Curl", weight = 15f, unit = "kg", section = MuscleSection.FOREARMS.id, note = "Slow eccentric"),
-            Exercise(name = "Overhead Shoulder Press", weight = 20f, unit = "kg", section = MuscleSection.SHOULDERS.id, note = "Dumbbells, neutral back"),
-            Exercise(name = "Hanging Leg Raise", weight = 0f, unit = "kg", section = MuscleSection.ABS.id, note = "Controlled movement, no swinging"),
-            Exercise(name = "Barbell Back Squat", weight = 80f, unit = "kg", section = MuscleSection.LEGS.id, note = "Full depth, drive through heels")
-        )
-        starters.forEach { exerciseRepository.addExercise(it) }
-    }
 
     val uiState: StateFlow<ExerciseListUiState> = combine(
         exerciseRepository.getExercises(),

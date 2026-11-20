@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import com.ironlog.gym.ui.screens.bodyweight.BodyWeightScreen
 import com.ironlog.gym.ui.screens.exerciseEdit.ExerciseEditScreen
 import com.ironlog.gym.ui.screens.exercises.ExerciseListScreen
+import com.ironlog.gym.ui.screens.timer.TimerScreen
 
 @Composable
 fun IronLogNavHost(
@@ -65,10 +66,12 @@ fun IronLogNavHost(
 
         composable<Screen.BodyWeight> {
             BodyWeightScreen(
-                onNavigateBack = {
-                    navController.popBackStack()
-                }
+                onNavigateBack = null
             )
+        }
+
+        composable<Screen.Timer> {
+            TimerScreen()
         }
     }
 }

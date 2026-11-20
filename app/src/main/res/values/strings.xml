@@ -84,4 +84,46 @@
     <string name="body_weight_empty_title">No weight entries yet</string>
     <string name="body_weight_empty_subtitle">Tap + to log your first body weight with a scale receipt.</string>
     <string name="body_weight_nav_label">Body Weight</string>
+
+    <!-- Bottom Navigation -->
+    <string name="nav_exercises">Exercises</string>
+    <string name="nav_body_weight">Weight</string>
+    <string name="nav_timer">Timer</string>
+
+    <!-- Timer & Chronometer -->
+    <string name="timer_screen_title">Timer &amp; Chrono</string>
+    <string name="timer_tab_stopwatch">Chronometer</string>
+    <string name="timer_tab_countdown">Timer</string>
+
+    <!-- Chronometer (Stopwatch) -->
+    <string name="stopwatch_start">Start</string>
+    <string name="stopwatch_pause">Pause</string>
+    <string name="stopwatch_resume">Resume</string>
+    <string name="stopwatch_reset">Reset</string>
+    <string name="stopwatch_lap">Lap</string>
+    <string name="stopwatch_laps_header">Lap History</string>
+    <string name="stopwatch_no_laps">No laps recorded yet</string>
+    <string name="stopwatch_lap_title">Lap %1$d</string>
+    <string name="stopwatch_best_lap">Fastest</string>
+    <string name="stopwatch_slowest_lap">Slowest</string>
+
+    <!-- Customizable Timer -->
+    <string name="timer_remaining_label">Remaining</string>
+    <string name="timer_times_up">Time\'s Up!</string>
+    <string name="timer_rest_completed">Rest period complete. Ready for next set!</string>
+    <string name="timer_custom_button">Custom</string>
+    <string name="timer_custom_dialog_title">Set Custom Timer</string>
+    <string name="timer_minutes">Minutes</string>
+    <string name="timer_seconds">Seconds</string>
+    <string name="timer_set_button">Set Timer</string>
+    <string name="timer_restart">Restart</string>
+    <string name="timer_presets_label">Quick Rest Presets</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_timer_name">Workout &amp; Rest Timer</string>
+    <string name="notification_channel_timer_desc">Alerts when your rest or workout timer finishes</string>
+    <string name="notification_timer_title">Time\'s Up! 💪</string>
+    <string name="notification_timer_text">Rest period complete. Ready for your next set!</string>
+    <string name="permission_notification_request">IronBody needs notification permission to alert you when your timer finishes in the background.</string>
+    <string name="permission_grant">Grant</string>
 </resources>

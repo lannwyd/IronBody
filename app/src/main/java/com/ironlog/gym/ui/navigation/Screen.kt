@@ -14,4 +14,7 @@ sealed interface Screen {
 
     @Serializable
     data object BodyWeight : Screen
+
+    @Serializable
+    data object Timer : Screen
 }
