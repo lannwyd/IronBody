@@ -56,6 +56,7 @@ case "`uname`" in
     ;;
 esac
 
+APP_HOME=$(cd "$(dirname "$0")" && pwd)
 CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
 
 # Determine the Java command to use to start the JVM.
@@ -73,4 +74,4 @@ else
     which java >/dev/null 2>&1 || die "ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH."
 fi
 
-exec "$JAVACMD" "$@"
+exec "$JAVACMD" "-classpath" "$CLASSPATH" org.gradle.wrapper.GradleWrapperMain "$@"
