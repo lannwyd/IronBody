@@ -49,9 +49,6 @@ fun IronLogNavHost(
                 },
                 onNavigateToEditExercise = { exerciseId ->
                     navController.navigate(Screen.ExerciseEdit(exerciseId = exerciseId))
-                },
-                onNavigateToBodyWeight = {
-                    navController.navigate(Screen.BodyWeight)
                 }
             )
         }

@@ -16,11 +16,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.MonitorWeight
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -58,7 +56,6 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 fun ExerciseListScreen(
     onNavigateToAddExercise: (String?) -> Unit,
     onNavigateToEditExercise: (Long) -> Unit,
-    onNavigateToBodyWeight: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ExerciseListViewModel = hiltViewModel()
 ) {
@@ -87,16 +84,7 @@ fun ExerciseListScreen(
         topBar = {
             IronLogTopAppBar(
                 title = stringResource(R.string.app_name),
-                showLogo = true,
-                actions = {
-                    IconButton(onClick = onNavigateToBodyWeight) {
-                        Icon(
-                            imageVector = Icons.Default.MonitorWeight,
-                            contentDescription = stringResource(R.string.body_weight_nav_label),
-                            tint = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
-                }
+                showLogo = true
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
