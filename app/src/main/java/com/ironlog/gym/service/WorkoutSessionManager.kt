@@ -438,6 +438,26 @@ class WorkoutSessionManager @Inject constructor(
         }
     }
 
+    fun pauseSession(onPaused: (() -> Unit)? = null) {
+        val state = _sessionState.value ?: return
+
+        sessionChronoJob?.cancel()
+        exerciseChronoJob?.cancel()
+        sessionTimerJob?.cancel()
+        restTimerJob?.cancel()
+
+        managerScope.launch {
+            state.exercises.forEach { ex ->
+                sessionRepository.updateExerciseLogDuration(ex.logId, ex.chronoElapsedMs)
+                sessionRepository.markExerciseCompleted(ex.logId, ex.isCompleted)
+            }
+            // Keep end_time as null in database so it is not finished
+            _sessionState.value = null
+            stopForegroundService()
+            onPaused?.invoke()
+        }
+    }
+
     private fun triggerAlarmFeedback() {
         try {
             val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

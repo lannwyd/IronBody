@@ -20,10 +20,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.Flag
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.Button
@@ -52,6 +54,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ironlog.gym.R
 import com.ironlog.gym.domain.model.SplitDay
+import com.ironlog.gym.domain.model.SplitDayExercise
 import com.ironlog.gym.ui.components.IronLogPrimaryButton
 import com.ironlog.gym.ui.components.IronLogTopAppBar
 import com.ironlog.gym.ui.screens.session.components.FinishSessionDialog
@@ -68,6 +71,7 @@ fun SessionScreen(
     splitId: Long = -1L,
     dayName: String = "",
     onNavigateBack: (() -> Unit)? = null,
+    onNavigateToHistory: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
     viewModel: SessionViewModel = hiltViewModel()
 ) {
@@ -75,11 +79,18 @@ fun SessionScreen(
 
     LaunchedEffect(splitDayId, splitId, dayName) {
         if (splitDayId > 0 && splitId > 0) {
-            viewModel.startWorkout(splitDayId, splitId, dayName)
+            viewModel.selectDay(
+                SplitDay(
+                    id = splitDayId,
+                    splitId = splitId,
+                    name = dayName
+                )
+            )
         }
     }
 
     val activeSession = uiState.activeSession
+    val selectedDay = uiState.selectedDay
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -89,10 +100,24 @@ fun SessionScreen(
                     dayName = activeSession.dayName,
                     onBackClick = { onNavigateBack?.invoke() }
                 )
+            } else if (selectedDay != null) {
+                SessionTopBar(
+                    dayName = selectedDay.name,
+                    onBackClick = { viewModel.clearSelectedDay() }
+                )
             } else {
                 IronLogTopAppBar(
                     title = stringResource(R.string.session_screen_title),
-                    showLogo = true
+                    showLogo = true,
+                    actions = {
+                        IconButton(onClick = { onNavigateToHistory?.invoke() }) {
+                            Icon(
+                                imageVector = Icons.Default.History,
+                                contentDescription = stringResource(R.string.session_history_tooltip),
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
                 )
             }
         },
@@ -116,6 +141,32 @@ fun SessionScreen(
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = stringResource(R.string.session_finish),
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 16.sp
+                        )
+                    }
+                }
+            } else if (selectedDay != null) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.surface)
+                        .padding(16.dp)
+                ) {
+                    IronLogPrimaryButton(
+                        onClick = {
+                            viewModel.startWorkout(selectedDay.id, selectedDay.splitId, selectedDay.name)
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PlayArrow,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.session_start_workout),
                             fontWeight = FontWeight.ExtraBold,
                             fontSize = 16.sp
                         )
@@ -197,6 +248,15 @@ fun SessionScreen(
                     )
                 }
             }
+        } else if (selectedDay != null) {
+            // ──────────────────────────────────────────────
+            // PRE-SESSION VIEW (DAY EXERCISE OVERVIEW)
+            // ──────────────────────────────────────────────
+            PreSessionView(
+                day = selectedDay,
+                exercises = uiState.selectedDayExercises,
+                modifier = Modifier.padding(innerPadding)
+            )
         } else {
             // ──────────────────────────────────────────────
             // IDLE STATE: COMPACT WORKOUT DAY LIST
@@ -272,8 +332,8 @@ fun SessionScreen(
                         StartDayWorkoutCard(
                             day = day,
                             dayIndex = index,
-                            onStart = {
-                                viewModel.startWorkout(day.id, day.splitId, day.name)
+                            onEnter = {
+                                viewModel.selectDay(day)
                             }
                         )
                     }
@@ -330,14 +390,150 @@ fun SessionScreen(
 }
 
 @Composable
+private fun PreSessionView(
+    day: SplitDay,
+    exercises: List<SplitDayExercise>,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        item(key = "day_info") {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.large,
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = "READY TO TRAIN",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
+                        letterSpacing = 1.sp
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = day.name,
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "${exercises.size} scheduled exercises",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
+
+        item(key = "exercises_label") {
+            Text(
+                text = "EXERCISE LIST (${exercises.size})",
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                letterSpacing = 1.sp,
+                modifier = Modifier.padding(top = 4.dp, start = 4.dp)
+            )
+        }
+
+        if (exercises.isEmpty()) {
+            item(key = "empty_exercises") {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = MaterialTheme.shapes.medium,
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(R.string.session_no_exercises),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+        } else {
+            itemsIndexed(exercises, key = { _, ex -> ex.splitDayExerciseId }) { idx, splitEx ->
+                val ex = splitEx.exercise
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = MaterialTheme.shapes.medium,
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(14.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(MaterialTheme.colorScheme.primaryContainer),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "${idx + 1}",
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.width(12.dp))
+
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = ex.name,
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = "${ex.weight} ${ex.unit} • ${ex.section.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.US) else it.toString() }}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
 private fun StartDayWorkoutCard(
     day: SplitDay,
     dayIndex: Int,
-    onStart: () -> Unit,
+    onEnter: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onEnter),
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
@@ -406,9 +602,9 @@ private fun StartDayWorkoutCard(
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            // Compact Start Button
+            // Compact Enter Button
             Button(
-                onClick = onStart,
+                onClick = onEnter,
                 modifier = Modifier.height(32.dp),
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(
@@ -418,13 +614,13 @@ private fun StartDayWorkoutCard(
                 contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.PlayArrow,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                     contentDescription = null,
                     modifier = Modifier.size(14.dp)
                 )
                 Spacer(modifier = Modifier.width(3.dp))
                 Text(
-                    text = "Start",
+                    text = stringResource(R.string.session_enter_day),
                     fontWeight = FontWeight.Bold,
                     fontSize = 12.sp
                 )

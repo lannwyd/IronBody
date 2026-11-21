@@ -16,4 +16,6 @@ interface SessionRepository {
     suspend fun getLogsForSessionSync(sessionId: Long): List<SessionExerciseLog>
 
     fun getAllSessions(): Flow<List<WorkoutSession>>
+
+    suspend fun deleteSession(sessionId: Long)
 }

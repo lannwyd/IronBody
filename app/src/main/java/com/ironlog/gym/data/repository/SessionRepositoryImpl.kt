@@ -85,6 +85,11 @@ class SessionRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun deleteSession(sessionId: Long) {
+        sessionDao.deleteLogsForSession(sessionId)
+        sessionDao.deleteSession(sessionId)
+    }
+
     private fun WorkoutSessionEntity.toDomain() = WorkoutSession(
         id = id,
         splitId = splitId,

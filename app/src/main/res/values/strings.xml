@@ -225,4 +225,13 @@
     <string name="session_select_day_subtitle">Choose which day of your active split to start training.</string>
     <string name="session_no_active_split">No Active Split Selected</string>
     <string name="session_no_active_split_subtitle">Go to the Splits tab to choose or create a gym split first.</string>
+    <string name="session_enter_day">Enter</string>
+    <string name="session_pause">Pause</string>
+    <string name="session_history_title">Workout History</string>
+    <string name="session_history_empty">No completed workouts yet</string>
+    <string name="session_history_empty_subtitle">Completed workout sessions will be recorded here.</string>
+    <string name="session_delete_title">Delete Session?</string>
+    <string name="session_delete_message">Are you sure you want to delete this workout record? This action cannot be undone.</string>
+    <string name="session_delete_confirm">Delete</string>
+    <string name="session_history_tooltip">Workout History</string>
 </resources>

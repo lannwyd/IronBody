@@ -34,4 +34,7 @@ sealed interface Screen {
         val splitId: Long = -1L,
         val dayName: String = ""
     ) : Screen
+
+    @Serializable
+    data object SessionHistory : Screen
 }

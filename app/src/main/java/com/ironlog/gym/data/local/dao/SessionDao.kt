@@ -50,4 +50,10 @@ interface SessionDao {
 
     @Query("UPDATE session_exercise_logs SET is_completed = :completed WHERE id = :logId")
     suspend fun updateLogCompleted(logId: Long, completed: Boolean)
+
+    @Query("DELETE FROM workout_sessions WHERE id = :sessionId")
+    suspend fun deleteSession(sessionId: Long)
+
+    @Query("DELETE FROM session_exercise_logs WHERE session_id = :sessionId")
+    suspend fun deleteLogsForSession(sessionId: Long)
 }
