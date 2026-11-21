@@ -88,6 +88,7 @@
     <!-- Bottom Navigation -->
     <string name="nav_exercises">Exercises</string>
     <string name="nav_splits">Splits</string>
+    <string name="nav_session">Session</string>
     <string name="nav_body_weight">Weight</string>
     <string name="nav_timer">Timer</string>
 
@@ -126,7 +127,7 @@
     <string name="splits_share_dialog_subtitle">Share your complete split and exercises with friends.</string>
     <string name="splits_copy_code">Copy Split Code</string>
     <string name="splits_code_copied">Split code copied to clipboard!</string>
-    <string name="splits_share_via">Share via App…</string>
+    <string name="splits_share_via">Share</string>
     <string name="splits_import_dialog_title">Import Workout Split</string>
     <string name="splits_import_dialog_subtitle">Paste a friend\'s split code to add their workout routine.</string>
     <string name="splits_paste_clipboard">Paste from Clipboard</string>
@@ -186,4 +187,42 @@
     <string name="notification_timer_text">Rest period complete. Ready for your next set!</string>
     <string name="permission_notification_request">IronBody needs notification permission to alert you when your timer finishes in the background.</string>
     <string name="permission_grant">Grant</string>
+
+    <!-- Workout Session & Timers -->
+    <string name="session_screen_title">Workout Session</string>
+    <string name="session_total_time">Session Duration</string>
+    <string name="session_start_workout">Start Session</string>
+    <string name="session_finish">Finish Session</string>
+    <string name="session_finish_title">Workout Complete! 🏆</string>
+    <string name="session_finish_subtitle">Solid work today. Here is your workout breakdown:</string>
+    <string name="session_total_duration">Total Time: %1$s</string>
+    <string name="session_exercise_time">Time Spent</string>
+    <string name="session_confirm_finish">Save</string>
+    <string name="session_keep_going">Keep Training</string>
+    <string name="session_set_timer">Set Session Timer</string>
+    <string name="session_timer_target">Target: %1$s</string>
+    <string name="session_timer_remaining">Remaining: %1$s</string>
+    <string name="session_timer_up">Session timer reached!</string>
+    <string name="session_no_exercises">No exercises scheduled for this day.</string>
+
+    <!-- Exercise Timing in Session -->
+    <string name="session_exercise_start">Start</string>
+    <string name="session_exercise_pause">Pause</string>
+    <string name="session_exercise_done">Done</string>
+    <string name="session_rest_countdown">Rest: %1$s</string>
+    <string name="session_rest_presets_label">Rest Between Sets</string>
+    <string name="session_quick_rest_60">1:00</string>
+    <string name="session_quick_rest_90">1:30</string>
+    <string name="session_quick_rest_120">2:00</string>
+
+    <!-- Notification Actions -->
+    <string name="notif_action_pause">Pause</string>
+    <string name="notif_action_resume">Play</string>
+    <string name="notif_action_next">Next</string>
+    <string name="notif_action_rest">Rest</string>
+    <string name="notif_action_finish">Finish</string>
+    <string name="session_select_day_title">Select Workout Day</string>
+    <string name="session_select_day_subtitle">Choose which day of your active split to start training.</string>
+    <string name="session_no_active_split">No Active Split Selected</string>
+    <string name="session_no_active_split_subtitle">Go to the Splits tab to choose or create a gym split first.</string>
 </resources>

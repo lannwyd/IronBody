@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ironlog.gym.R
+import androidx.compose.material.icons.filled.PlayArrow
 import com.ironlog.gym.ui.components.IronLogTopAppBar
 import com.ironlog.gym.ui.components.pressScale
 import com.ironlog.gym.ui.screens.splits.components.AddEditDayDialog

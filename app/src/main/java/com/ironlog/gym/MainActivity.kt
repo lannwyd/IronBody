@@ -55,14 +55,24 @@ fun MainApp(
     val showBottomBar = currentDestination?.hierarchy?.any {
         it.hasRoute(Screen.ExerciseList::class) ||
         it.hasRoute(Screen.Splits::class) ||
+        it.hasRoute(Screen.Session::class) ||
         it.hasRoute(Screen.BodyWeight::class) ||
         it.hasRoute(Screen.Timer::class)
     } == true
 
-    // Handle notification click intent to jump straight to Timer
+    // Handle notification click intent to jump straight to Timer or Session
     LaunchedEffect(intent) {
-        if (intent?.getStringExtra("navigate_to") == "timer") {
+        val target = intent?.getStringExtra("navigate_to")
+        if (target == "timer") {
             navController.navigate(Screen.Timer) {
+                popUpTo(navController.graph.findStartDestination().id) {
+                    saveState = true
+                }
+                launchSingleTop = true
+                restoreState = true
+            }
+        } else if (target == "session") {
+            navController.navigate(Screen.Session()) {
                 popUpTo(navController.graph.findStartDestination().id) {
                     saveState = true
                 }

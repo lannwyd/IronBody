@@ -27,4 +27,11 @@ sealed interface Screen {
 
     @Serializable
     data object Timer : Screen
+
+    @Serializable
+    data class Session(
+        val splitDayId: Long = -1L,
+        val splitId: Long = -1L,
+        val dayName: String = ""
+    ) : Screen
 }

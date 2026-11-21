@@ -6,6 +6,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.MonitorWeight
+import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -45,6 +46,12 @@ sealed class BottomNavItem(
         icon = Icons.Default.CalendarMonth
     )
 
+    data object Session : BottomNavItem(
+        route = Screen.Session(),
+        titleRes = R.string.nav_session,
+        icon = Icons.Default.PlayCircle
+    )
+
     data object BodyWeight : BottomNavItem(
         route = Screen.BodyWeight,
         titleRes = R.string.nav_body_weight,
@@ -58,7 +65,7 @@ sealed class BottomNavItem(
     )
 
     companion object {
-        val items = listOf(Exercises, Splits, BodyWeight, Timer)
+        val items = listOf(Exercises, Splits, Session, BodyWeight, Timer)
     }
 }
 

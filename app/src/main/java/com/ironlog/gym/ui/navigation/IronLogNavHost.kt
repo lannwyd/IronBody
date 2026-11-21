@@ -9,9 +9,11 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import com.ironlog.gym.ui.screens.bodyweight.BodyWeightScreen
 import com.ironlog.gym.ui.screens.exerciseEdit.ExerciseEditScreen
 import com.ironlog.gym.ui.screens.exercises.ExerciseListScreen
+import com.ironlog.gym.ui.screens.session.SessionScreen
 import com.ironlog.gym.ui.screens.splits.SplitsScreen
 import com.ironlog.gym.ui.screens.splits.daydetail.SplitDayDetailScreen
 import com.ironlog.gym.ui.screens.timer.TimerScreen
@@ -96,6 +98,18 @@ fun IronLogNavHost(
 
         composable<Screen.Timer> {
             TimerScreen()
+        }
+
+        composable<Screen.Session> { backStackEntry ->
+            val sessionRoute = backStackEntry.toRoute<Screen.Session>()
+            SessionScreen(
+                splitDayId = sessionRoute.splitDayId,
+                splitId = sessionRoute.splitId,
+                dayName = sessionRoute.dayName,
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }

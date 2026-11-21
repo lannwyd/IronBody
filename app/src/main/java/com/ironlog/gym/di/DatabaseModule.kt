@@ -44,4 +44,9 @@ object DatabaseModule {
     fun provideSplitDao(database: IronLogDatabase): com.ironlog.gym.data.local.dao.SplitDao {
         return database.splitDao()
     }
+
+    @Provides
+    fun provideSessionDao(database: IronLogDatabase): com.ironlog.gym.data.local.dao.SessionDao {
+        return database.sessionDao()
+    }
 }

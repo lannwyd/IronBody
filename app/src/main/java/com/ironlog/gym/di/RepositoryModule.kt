@@ -33,4 +33,10 @@ abstract class RepositoryModule {
     abstract fun bindSplitRepository(
         splitRepositoryImpl: SplitRepositoryImpl
     ): SplitRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindSessionRepository(
+        sessionRepositoryImpl: com.ironlog.gym.data.repository.SessionRepositoryImpl
+    ): com.ironlog.gym.domain.repository.SessionRepository
 }
