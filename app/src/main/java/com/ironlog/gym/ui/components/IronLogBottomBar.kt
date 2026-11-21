@@ -3,6 +3,7 @@ package com.ironlog.gym.ui.components
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.MonitorWeight
 import androidx.compose.material.icons.filled.Timer
@@ -38,6 +39,12 @@ sealed class BottomNavItem(
         icon = Icons.Default.FitnessCenter
     )
 
+    data object Splits : BottomNavItem(
+        route = Screen.Splits,
+        titleRes = R.string.nav_splits,
+        icon = Icons.Default.CalendarMonth
+    )
+
     data object BodyWeight : BottomNavItem(
         route = Screen.BodyWeight,
         titleRes = R.string.nav_body_weight,
@@ -51,7 +58,7 @@ sealed class BottomNavItem(
     )
 
     companion object {
-        val items = listOf(Exercises, BodyWeight, Timer)
+        val items = listOf(Exercises, Splits, BodyWeight, Timer)
     }
 }
 

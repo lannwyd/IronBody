@@ -87,8 +87,51 @@
 
     <!-- Bottom Navigation -->
     <string name="nav_exercises">Exercises</string>
+    <string name="nav_splits">Splits</string>
     <string name="nav_body_weight">Weight</string>
     <string name="nav_timer">Timer</string>
+
+    <!-- Splits Section -->
+    <string name="splits_screen_title">Gym Splits</string>
+    <string name="splits_active_badge">ACTIVE SPLIT</string>
+    <string name="splits_choose_split">Switch Split</string>
+    <string name="splits_new_split">New Split</string>
+    <string name="splits_famous_presets">Famous Splits</string>
+    <string name="splits_rename_split">Rename Split</string>
+    <string name="splits_delete_split">Delete Split</string>
+    <string name="splits_delete_split_confirm">Are you sure you want to delete this split and all its scheduled days?</string>
+    <string name="splits_days_title">Split Days</string>
+    <string name="splits_add_day">Add Day</string>
+    <string name="splits_rename_day">Rename Day</string>
+    <string name="splits_delete_day">Delete Day</string>
+    <string name="splits_delete_day_confirm">Remove this day and its exercise schedule from your split?</string>
+    <string name="splits_day_name_label">Day Name</string>
+    <string name="splits_day_name_hint">e.g. Push, Chest &amp; Back, Legs…</string>
+    <string name="splits_split_name_label">Split Name</string>
+    <string name="splits_split_name_hint">e.g. My 4-Day Hypertrophy, Arnold Split…</string>
+    <string name="splits_custom_name">Custom Split Name</string>
+    <string name="splits_empty_days_title">No days in this split</string>
+    <string name="splits_empty_days_subtitle">Tap + Add Day to build your workout schedule.</string>
+    <string name="splits_no_splits_title">No workout splits yet</string>
+    <string name="splits_no_splits_subtitle">Choose from a famous workout split or build your own custom split.</string>
+    <string name="splits_apply_preset">Use This Split</string>
+    <string name="splits_day_exercises_count">%1$d exercises</string>
+    <string name="splits_day_single_exercise">1 exercise</string>
+    <string name="splits_day_no_exercises">No exercises added yet — tap to add</string>
+
+    <!-- Split Day Details & Exercise Picker -->
+    <string name="split_day_workout_title">Workout Plan</string>
+    <string name="split_day_add_exercises">Add Exercises</string>
+    <string name="split_day_empty_exercises_title">No exercises in this day</string>
+    <string name="split_day_empty_exercises_subtitle">Tap + Add Exercises to select from your global exercises list.</string>
+    <string name="split_day_exercise_removed">Exercise removed from day</string>
+    <string name="split_picker_title">Select Exercises</string>
+    <string name="split_picker_search_hint">Search by exercise name or note…</string>
+    <string name="split_picker_selected_count">%1$d Selected</string>
+    <string name="split_picker_done">Add to Workout</string>
+    <string name="split_picker_no_results">No matching exercises found</string>
+    <string name="split_picker_empty_global_title">No exercises in your library</string>
+    <string name="split_picker_empty_global_subtitle">Add exercises in the Exercises tab first to include them in your split.</string>
 
     <!-- Timer & Chronometer -->
     <string name="timer_screen_title">Timer &amp; Chrono</string>

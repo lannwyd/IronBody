@@ -54,6 +54,7 @@ fun MainApp(
     // Show bottom bar on primary top-level tabs
     val showBottomBar = currentDestination?.hierarchy?.any {
         it.hasRoute(Screen.ExerciseList::class) ||
+        it.hasRoute(Screen.Splits::class) ||
         it.hasRoute(Screen.BodyWeight::class) ||
         it.hasRoute(Screen.Timer::class)
     } == true

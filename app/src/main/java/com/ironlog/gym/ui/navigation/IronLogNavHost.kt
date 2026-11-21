@@ -12,6 +12,8 @@ import androidx.navigation.compose.composable
 import com.ironlog.gym.ui.screens.bodyweight.BodyWeightScreen
 import com.ironlog.gym.ui.screens.exerciseEdit.ExerciseEditScreen
 import com.ironlog.gym.ui.screens.exercises.ExerciseListScreen
+import com.ironlog.gym.ui.screens.splits.SplitsScreen
+import com.ironlog.gym.ui.screens.splits.daydetail.SplitDayDetailScreen
 import com.ironlog.gym.ui.screens.timer.TimerScreen
 
 @Composable
@@ -57,6 +59,31 @@ fun IronLogNavHost(
             ExerciseEditScreen(
                 onNavigateBack = {
                     navController.popBackStack()
+                }
+            )
+        }
+
+        composable<Screen.Splits> {
+            SplitsScreen(
+                onNavigateToDay = { dayId, splitId, dayName ->
+                    navController.navigate(
+                        Screen.SplitDayDetail(
+                            splitDayId = dayId,
+                            splitId = splitId,
+                            dayName = dayName
+                        )
+                    )
+                }
+            )
+        }
+
+        composable<Screen.SplitDayDetail> {
+            SplitDayDetailScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToExerciseDetail = { exerciseId ->
+                    navController.navigate(Screen.ExerciseEdit(exerciseId = exerciseId))
                 }
             )
         }

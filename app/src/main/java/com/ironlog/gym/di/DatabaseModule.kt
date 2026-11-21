@@ -39,4 +39,9 @@ object DatabaseModule {
     fun provideBodyWeightDao(database: IronLogDatabase): BodyWeightDao {
         return database.bodyWeightDao()
     }
+
+    @Provides
+    fun provideSplitDao(database: IronLogDatabase): com.ironlog.gym.data.local.dao.SplitDao {
+        return database.splitDao()
+    }
 }

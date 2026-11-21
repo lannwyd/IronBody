@@ -13,6 +13,16 @@ sealed interface Screen {
     ) : Screen
 
     @Serializable
+    data object Splits : Screen
+
+    @Serializable
+    data class SplitDayDetail(
+        val splitDayId: Long,
+        val splitId: Long,
+        val dayName: String = ""
+    ) : Screen
+
+    @Serializable
     data object BodyWeight : Screen
 
     @Serializable
