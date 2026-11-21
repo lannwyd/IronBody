@@ -29,6 +29,9 @@ interface SplitDao {
     @Query("SELECT * FROM gym_splits WHERE id = :id LIMIT 1")
     fun getSplitById(id: Long): Flow<GymSplitEntity?>
 
+    @Query("SELECT * FROM gym_splits WHERE id = :id LIMIT 1")
+    suspend fun getSplitByIdSync(id: Long): GymSplitEntity?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSplit(split: GymSplitEntity): Long
 
@@ -63,6 +66,9 @@ interface SplitDao {
         ORDER BY sd.sort_order ASC, sd.id ASC
     """)
     fun getDaysWithCountForSplit(splitId: Long): Flow<List<SplitDayWithCount>>
+
+    @Query("SELECT * FROM split_days WHERE split_id = :splitId ORDER BY sort_order ASC, id ASC")
+    suspend fun getDaysForSplitSync(splitId: Long): List<SplitDayEntity>
 
     @Query("SELECT * FROM split_days WHERE id = :dayId LIMIT 1")
     fun getDayById(dayId: Long): Flow<SplitDayEntity?>
@@ -116,6 +122,27 @@ interface SplitDao {
         ORDER BY sde.sort_order ASC, sde.id ASC
     """)
     fun getExercisesForDay(splitDayId: Long): Flow<List<SplitDayExerciseWithDetails>>
+
+    @Query("""
+        SELECT 
+            sde.id AS split_day_exercise_id,
+            sde.split_day_id AS split_day_id,
+            sde.sort_order AS day_sort_order,
+            e.id AS id,
+            e.name AS name,
+            e.weight AS weight,
+            e.unit AS unit,
+            e.image_path AS image_path,
+            e.sort_order AS sort_order,
+            e.created_at AS created_at,
+            e.note AS note,
+            e.section AS section
+        FROM split_day_exercises sde
+        INNER JOIN exercises e ON sde.exercise_id = e.id
+        WHERE sde.split_day_id = :splitDayId
+        ORDER BY sde.sort_order ASC, sde.id ASC
+    """)
+    suspend fun getExercisesForDaySync(splitDayId: Long): List<SplitDayExerciseWithDetails>
 
     @Query("SELECT exercise_id FROM split_day_exercises WHERE split_day_id = :splitDayId")
     fun getExerciseIdsForDay(splitDayId: Long): Flow<List<Long>>

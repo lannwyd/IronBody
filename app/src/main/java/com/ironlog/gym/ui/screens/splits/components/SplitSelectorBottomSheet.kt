@@ -19,6 +19,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DeleteOutline
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -49,6 +51,8 @@ fun SplitSelectorBottomSheet(
     onSelectSplit: (Long) -> Unit,
     onCreateNewSplit: () -> Unit,
     onOpenFamousSplits: () -> Unit,
+    onShareSplit: (GymSplit) -> Unit,
+    onOpenImportSplit: () -> Unit,
     onDeleteSplit: (GymSplit) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
@@ -139,17 +143,34 @@ fun SplitSelectorBottomSheet(
                             }
                         }
 
-                        if (splits.size > 1) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
                             IconButton(
-                                onClick = { onDeleteSplit(split) },
+                                onClick = {
+                                    onDismiss()
+                                    onShareSplit(split)
+                                },
                                 modifier = Modifier.size(36.dp)
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.DeleteOutline,
-                                    contentDescription = "Delete Split",
-                                    tint = MaterialTheme.colorScheme.error,
+                                    imageVector = Icons.Default.Share,
+                                    contentDescription = "Share Split",
+                                    tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(20.dp)
                                 )
+                            }
+
+                            if (splits.size > 1) {
+                                IconButton(
+                                    onClick = { onDeleteSplit(split) },
+                                    modifier = Modifier.size(36.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.DeleteOutline,
+                                        contentDescription = "Delete Split",
+                                        tint = MaterialTheme.colorScheme.error,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
                             }
                         }
                     }
@@ -163,7 +184,7 @@ fun SplitSelectorBottomSheet(
             // Action Buttons
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 // Famous splits button
                 Box(
@@ -183,11 +204,41 @@ fun SplitSelectorBottomSheet(
                             imageVector = Icons.Default.Star,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(18.dp)
+                            modifier = Modifier.size(16.dp)
                         )
-                        Spacer(modifier = Modifier.width(6.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = stringResource(R.string.splits_famous_presets),
+                            text = "Famous",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
+
+                // Import Split button
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(50.dp)
+                        .clip(MaterialTheme.shapes.medium)
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                        .clickable {
+                            onDismiss()
+                            onOpenImportSplit()
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Download,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "Import",
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
@@ -213,9 +264,9 @@ fun SplitSelectorBottomSheet(
                             imageVector = Icons.Default.Add,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onPrimary,
-                            modifier = Modifier.size(18.dp)
+                            modifier = Modifier.size(16.dp)
                         )
-                        Spacer(modifier = Modifier.width(6.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = stringResource(R.string.splits_new_split),
                             style = MaterialTheme.typography.labelMedium,

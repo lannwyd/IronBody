@@ -23,8 +23,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material3.AlertDialog
@@ -37,11 +39,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -59,6 +65,8 @@ import com.ironlog.gym.ui.components.pressScale
 import com.ironlog.gym.ui.screens.splits.components.AddEditDayDialog
 import com.ironlog.gym.ui.screens.splits.components.EditSplitDialog
 import com.ironlog.gym.ui.screens.splits.components.FamousSplitsDialog
+import com.ironlog.gym.ui.screens.splits.components.ImportSplitDialog
+import com.ironlog.gym.ui.screens.splits.components.ShareSplitDialog
 import com.ironlog.gym.ui.screens.splits.components.SplitDayCard
 import com.ironlog.gym.ui.screens.splits.components.SplitSelectorBottomSheet
 import sh.calvin.reorderable.ReorderableItem
@@ -71,6 +79,15 @@ fun SplitsScreen(
     viewModel: SplitsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(uiState.snackbarMessage) {
+        val msg = uiState.snackbarMessage
+        if (!msg.isNullOrBlank()) {
+            snackbarHostState.showSnackbar(msg)
+            viewModel.clearSnackbarMessage()
+        }
+    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -79,6 +96,30 @@ fun SplitsScreen(
                 title = stringResource(R.string.splits_screen_title),
                 showLogo = true,
                 actions = {
+                    // Import Split button
+                    IconButton(
+                        onClick = { viewModel.showImportDialog() }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Download,
+                            contentDescription = stringResource(R.string.splits_import),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+
+                    // Share Split button
+                    if (uiState.activeSplit != null) {
+                        IconButton(
+                            onClick = { viewModel.onShareSplit() }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Share,
+                                contentDescription = stringResource(R.string.splits_share),
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
+
                     // Button to open famous presets
                     IconButton(
                         onClick = { viewModel.showFamousSplitsDialog() }
@@ -86,7 +127,7 @@ fun SplitsScreen(
                         Icon(
                             imageVector = Icons.Default.Star,
                             contentDescription = stringResource(R.string.splits_famous_presets),
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
 
@@ -103,6 +144,7 @@ fun SplitsScreen(
                 }
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             if (uiState.activeSplit != null) {
                 FloatingActionButton(
@@ -164,7 +206,8 @@ fun SplitsScreen(
                             totalExercises = uiState.days.sumOf { it.exerciseCount },
                             onRenameClick = { viewModel.showRenameSplitDialog() },
                             onFamousClick = { viewModel.showFamousSplitsDialog() },
-                            onSwitchClick = { viewModel.showSplitSelectorSheet() }
+                            onSwitchClick = { viewModel.showSplitSelectorSheet() },
+                            onShareClick = { viewModel.onShareSplit() }
                         )
                     }
 
@@ -398,8 +441,26 @@ fun SplitsScreen(
             onSelectSplit = { viewModel.onSelectSplit(it) },
             onCreateNewSplit = { viewModel.showNewSplitDialog() },
             onOpenFamousSplits = { viewModel.showFamousSplitsDialog() },
+            onShareSplit = { viewModel.onShareSplit(it.id) },
+            onOpenImportSplit = { viewModel.showImportDialog() },
             onDeleteSplit = { viewModel.showDeleteSplitDialog(it) },
             onDismiss = { viewModel.hideSplitSelectorSheet() }
+        )
+    }
+
+    if (uiState.showShareDialog && uiState.activeSplit != null) {
+        ShareSplitDialog(
+            splitName = uiState.activeSplit!!.name,
+            shareText = uiState.shareText,
+            onDismiss = { viewModel.hideShareDialog() }
+        )
+    }
+
+    if (uiState.showImportDialog) {
+        ImportSplitDialog(
+            onParseText = { viewModel.parseSplitFromText(it) },
+            onImportSplit = { viewModel.onImportSplit(it) },
+            onDismiss = { viewModel.hideImportDialog() }
         )
     }
 }
@@ -412,6 +473,7 @@ private fun ActiveSplitHeroCard(
     onRenameClick: () -> Unit,
     onFamousClick: () -> Unit,
     onSwitchClick: () -> Unit,
+    onShareClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -475,7 +537,7 @@ private fun ActiveSplitHeroCard(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Split Name & Quick Edit
+            // Split Name & Quick Edit / Share
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -491,16 +553,30 @@ private fun ActiveSplitHeroCard(
                     overflow = TextOverflow.Ellipsis
                 )
 
-                IconButton(
-                    onClick = onRenameClick,
-                    modifier = Modifier.size(36.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = stringResource(R.string.splits_rename_split),
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(20.dp)
-                    )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(
+                        onClick = onShareClick,
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Share,
+                            contentDescription = stringResource(R.string.splits_share),
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+
+                    IconButton(
+                        onClick = onRenameClick,
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = stringResource(R.string.splits_rename_split),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                 }
             }
 

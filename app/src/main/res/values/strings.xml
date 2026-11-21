@@ -119,6 +119,23 @@
     <string name="splits_day_single_exercise">1 exercise</string>
     <string name="splits_day_no_exercises">No exercises added yet — tap to add</string>
 
+    <!-- Split Sharing & Importing -->
+    <string name="splits_share">Share Split</string>
+    <string name="splits_import">Import Split</string>
+    <string name="splits_share_dialog_title">Share Workout Split</string>
+    <string name="splits_share_dialog_subtitle">Share your complete split and exercises with friends.</string>
+    <string name="splits_copy_code">Copy Split Code</string>
+    <string name="splits_code_copied">Split code copied to clipboard!</string>
+    <string name="splits_share_via">Share via App…</string>
+    <string name="splits_import_dialog_title">Import Workout Split</string>
+    <string name="splits_import_dialog_subtitle">Paste a friend\'s split code to add their workout routine.</string>
+    <string name="splits_paste_clipboard">Paste from Clipboard</string>
+    <string name="splits_import_button">Import Split</string>
+    <string name="splits_import_preview_title">Split Preview</string>
+    <string name="splits_invalid_code">No valid IronBody split code detected. Please paste the code.</string>
+    <string name="splits_import_success">Split \'%1$s\' imported successfully!</string>
+    <string name="splits_import_code_hint">Paste split code or message here…</string>
+
     <!-- Split Day Details & Exercise Picker -->
     <string name="split_day_workout_title">Workout Plan</string>
     <string name="split_day_add_exercises">Add Exercises</string>

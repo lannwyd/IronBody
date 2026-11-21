@@ -2,6 +2,7 @@ package com.ironlog.gym.domain.repository
 
 import com.ironlog.gym.domain.model.FamousSplitPreset
 import com.ironlog.gym.domain.model.GymSplit
+import com.ironlog.gym.domain.model.SharedSplit
 import com.ironlog.gym.domain.model.SplitDay
 import com.ironlog.gym.domain.model.SplitDayExercise
 import kotlinx.coroutines.flow.Flow
@@ -30,4 +31,10 @@ interface SplitRepository {
     suspend fun removeExerciseFromDayByExerciseId(splitDayId: Long, exerciseId: Long)
     suspend fun updateDayExerciseSortOrders(orderedSplitDayExerciseIds: List<Long>)
     suspend fun ensureDefaultSplitExists(): Long
+
+    // Sharing & Importing
+    suspend fun exportSplit(splitId: Long): SharedSplit?
+    suspend fun exportSplitToShareText(splitId: Long): String?
+    fun parseSplitFromText(rawText: String): SharedSplit?
+    suspend fun importSplit(sharedSplit: SharedSplit): Long
 }

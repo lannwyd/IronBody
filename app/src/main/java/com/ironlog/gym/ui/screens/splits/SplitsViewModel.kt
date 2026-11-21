@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ironlog.gym.domain.model.FamousSplitPreset
 import com.ironlog.gym.domain.model.GymSplit
+import com.ironlog.gym.domain.model.SharedSplit
 import com.ironlog.gym.domain.model.SplitDay
 import com.ironlog.gym.domain.repository.SplitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,7 +35,11 @@ class SplitsViewModel @Inject constructor(
         val editingDay: SplitDay? = null,
         val dayToDelete: SplitDay? = null,
         val splitToDelete: GymSplit? = null,
-        val showSplitSelectorSheet: Boolean = false
+        val showSplitSelectorSheet: Boolean = false,
+        val showShareDialog: Boolean = false,
+        val shareText: String = "",
+        val showImportDialog: Boolean = false,
+        val snackbarMessage: String? = null
     )
 
     init {
@@ -69,7 +74,11 @@ class SplitsViewModel @Inject constructor(
                     editingDay = dialogs.editingDay,
                     dayToDelete = dialogs.dayToDelete,
                     splitToDelete = dialogs.splitToDelete,
-                    showSplitSelectorSheet = dialogs.showSplitSelectorSheet
+                    showSplitSelectorSheet = dialogs.showSplitSelectorSheet,
+                    showShareDialog = dialogs.showShareDialog,
+                    shareText = dialogs.shareText,
+                    showImportDialog = dialogs.showImportDialog,
+                    snackbarMessage = dialogs.snackbarMessage
                 )
             }
         }.stateIn(
@@ -146,6 +155,50 @@ class SplitsViewModel @Inject constructor(
                 splitRepository.updateDaySortOrders(orderedIds)
             }
         }
+    }
+
+    // === Sharing & Importing ===
+    fun onShareSplit(targetSplitId: Long? = null) {
+        val splitId = targetSplitId ?: uiState.value.activeSplit?.id ?: return
+        viewModelScope.launch {
+            val shareText = splitRepository.exportSplitToShareText(splitId)
+            if (!shareText.isNullOrBlank()) {
+                _dialogState.value = _dialogState.value.copy(
+                    showShareDialog = true,
+                    shareText = shareText
+                )
+            }
+        }
+    }
+
+    fun parseSplitFromText(rawText: String): SharedSplit? {
+        return splitRepository.parseSplitFromText(rawText)
+    }
+
+    fun onImportSplit(sharedSplit: SharedSplit) {
+        viewModelScope.launch {
+            val newSplitId = splitRepository.importSplit(sharedSplit)
+            _dialogState.value = _dialogState.value.copy(
+                showImportDialog = false,
+                snackbarMessage = "Split '${sharedSplit.name}' imported with all exercises!"
+            )
+        }
+    }
+
+    fun clearSnackbarMessage() {
+        _dialogState.value = _dialogState.value.copy(snackbarMessage = null)
+    }
+
+    fun hideShareDialog() {
+        _dialogState.value = _dialogState.value.copy(showShareDialog = false)
+    }
+
+    fun showImportDialog() {
+        _dialogState.value = _dialogState.value.copy(showImportDialog = true)
+    }
+
+    fun hideImportDialog() {
+        _dialogState.value = _dialogState.value.copy(showImportDialog = false)
     }
 
     fun showFamousSplitsDialog() { _dialogState.value = _dialogState.value.copy(showFamousSplitsDialog = true) }

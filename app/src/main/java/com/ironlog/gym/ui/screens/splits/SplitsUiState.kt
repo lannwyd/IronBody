@@ -15,5 +15,9 @@ data class SplitsUiState(
     val editingDay: SplitDay? = null,
     val dayToDelete: SplitDay? = null,
     val splitToDelete: GymSplit? = null,
-    val showSplitSelectorSheet: Boolean = false
+    val showSplitSelectorSheet: Boolean = false,
+    val showShareDialog: Boolean = false,
+    val shareText: String = "",
+    val showImportDialog: Boolean = false,
+    val snackbarMessage: String? = null
 )

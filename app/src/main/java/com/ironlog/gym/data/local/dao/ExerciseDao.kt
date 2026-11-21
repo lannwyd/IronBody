@@ -22,6 +22,9 @@ interface ExerciseDao {
     @Query("SELECT * FROM exercises WHERE id = :id LIMIT 1")
     suspend fun getExerciseByIdSync(id: Long): ExerciseEntity?
 
+    @Query("SELECT * FROM exercises WHERE LOWER(name) = LOWER(:name) LIMIT 1")
+    suspend fun getExerciseByName(name: String): ExerciseEntity?
+
     @Query("SELECT COALESCE(MAX(sort_order), -1) FROM exercises")
     suspend fun getMaxSortOrder(): Int
 
