@@ -11,6 +11,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
@@ -18,47 +19,55 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = ElectricLime,
-    onPrimary = Color(0xFF141A00),
-    primaryContainer = ElectricLimeContainer,
-    onPrimaryContainer = OnElectricLimeContainer,
-    secondary = Color(0xFFC7C5D0),
-    onSecondary = Color(0xFF30303A),
-    background = SurfaceDark0,
-    onBackground = TextPrimaryDark,
-    surface = SurfaceDark1,
-    onSurface = TextPrimaryDark,
-    surfaceVariant = SurfaceDark2,
-    onSurfaceVariant = TextSecondaryDark,
-    outline = SurfaceDark3,
+    primary = IndigoPrimaryDark,
+    onPrimary = Color(0xFF0D0E14),
+    primaryContainer = IndigoContainerDark,
+    onPrimaryContainer = OnIndigoContainerDark,
+    secondary = CyanSecondaryDark,
+    onSecondary = Color(0xFF0D0E14),
+    secondaryContainer = CyanContainerDark,
+    onSecondaryContainer = OnCyanContainerDark,
+    background = BgDark,
+    onBackground = TextDark,
+    surface = CardDark,
+    onSurface = TextDark,
+    surfaceVariant = SurfaceDarkVariant,
+    onSurfaceVariant = TextMutedDark,
+    outline = OutlineDark,
+    outlineVariant = OutlineDark.copy(alpha = 0.6f),
     error = IronRed,
     onError = Color.White,
-    errorContainer = IronRedContainer,
+    errorContainer = IronRedContainerDark,
     onErrorContainer = Color(0xFFFFB4AB)
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = ElectricLimeLightVariant,
+    primary = IndigoPrimary,
     onPrimary = Color.White,
-    primaryContainer = Color(0xFFE4F8A6),
-    onPrimaryContainer = Color(0xFF182000),
-    secondary = Color(0xFF5F5D6B),
+    primaryContainer = IndigoContainerLight,
+    onPrimaryContainer = OnIndigoContainerLight,
+    secondary = CyanSecondary,
     onSecondary = Color.White,
-    background = SurfaceLight0,
-    onBackground = TextPrimaryLight,
-    surface = SurfaceLight1,
-    onSurface = TextPrimaryLight,
-    surfaceVariant = SurfaceLight2,
-    onSurfaceVariant = TextSecondaryLight,
-    outline = SurfaceLight3,
+    secondaryContainer = CyanContainerLight,
+    onSecondaryContainer = OnCyanContainerLight,
+    background = BgLight,
+    onBackground = TextLight,
+    surface = CardLight,
+    onSurface = TextLight,
+    surfaceVariant = SurfaceLightVariant,
+    onSurfaceVariant = TextMutedLight,
+    outline = OutlineLight,
+    outlineVariant = OutlineLight.copy(alpha = 0.6f),
     error = IronRed,
-    onError = Color.White
+    onError = Color.White,
+    errorContainer = IronRedContainerLight,
+    onErrorContainer = IronRed
 )
 
 @Composable
 fun IronLogTheme(
-    darkTheme: Boolean = true, // Dark-first design
-    dynamicColor: Boolean = false, // Emphasize our custom premium electric lime palette
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -92,4 +101,13 @@ fun IronLogTheme(
             content = content
         )
     }
+}
+
+data class ThemeController(
+    val isDark: Boolean,
+    val onToggle: () -> Unit
+)
+
+val LocalThemeController = staticCompositionLocalOf {
+    ThemeController(isDark = true, onToggle = {})
 }

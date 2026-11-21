@@ -11,14 +11,18 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -48,6 +52,7 @@ import com.ironlog.gym.ui.components.ExerciseEmptyState
 import com.ironlog.gym.ui.components.IronLogTopAppBar
 import com.ironlog.gym.ui.components.SearchAndFilterBar
 import com.ironlog.gym.ui.components.pressScale
+import com.ironlog.gym.ui.theme.LocalThemeController
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
@@ -82,9 +87,22 @@ fun ExerciseListScreen(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
+            val themeController = LocalThemeController.current
             IronLogTopAppBar(
                 title = stringResource(R.string.app_name),
-                showLogo = true
+                showLogo = true,
+                actions = {
+                    IconButton(
+                        onClick = themeController.onToggle,
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Icon(
+                            imageVector = if (themeController.isDark) Icons.Default.LightMode else Icons.Default.DarkMode,
+                            contentDescription = if (themeController.isDark) "Switch to Light Mode" else "Switch to Dark Mode",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },

@@ -91,7 +91,6 @@ import com.ironlog.gym.ui.components.IronLogPrimaryButton
 import com.ironlog.gym.ui.components.IronLogSecondaryButton
 import com.ironlog.gym.ui.components.IronLogTopAppBar
 import com.ironlog.gym.ui.components.pressScale
-import com.ironlog.gym.ui.theme.ElectricLime
 import com.ironlog.gym.ui.theme.IronRed
 import java.util.Locale
 

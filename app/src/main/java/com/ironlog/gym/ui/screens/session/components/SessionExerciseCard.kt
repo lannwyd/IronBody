@@ -1,6 +1,14 @@
 package com.ironlog.gym.ui.screens.session.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,7 +23,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -31,10 +38,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -44,7 +52,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ironlog.gym.R
 import com.ironlog.gym.ui.screens.session.ExerciseTimerState
-import com.ironlog.gym.ui.theme.ElectricLime
 import com.ironlog.gym.ui.theme.IronRed
 import java.util.Locale
 
@@ -59,27 +66,50 @@ fun SessionExerciseCard(
     onCancelRest: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val borderColor = when {
-        isActive -> ElectricLime
-        state.isCompleted -> MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
+    val targetBorderColor = when {
+        isActive -> MaterialTheme.colorScheme.primary
+        state.isCompleted -> MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)
         else -> MaterialTheme.colorScheme.outline
     }
+    val animatedBorderColor by animateColorAsState(
+        targetValue = targetBorderColor,
+        animationSpec = tween(300),
+        label = "borderColor"
+    )
 
-    val cardBg = if (isActive) {
-        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.15f)
+    val targetCardBg = if (isActive) {
+        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.25f)
     } else {
         MaterialTheme.colorScheme.surface
     }
+    val animatedCardBg by animateColorAsState(
+        targetValue = targetCardBg,
+        animationSpec = tween(300),
+        label = "cardBg"
+    )
+
+    // Smooth pulse for active running chronometer
+    val infiniteTransition = rememberInfiniteTransition(label = "pulse")
+    val pulseAlpha by infiniteTransition.animateFloat(
+        initialValue = if (state.isChronoRunning) 0.65f else 1f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(700, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "pulseAlpha"
+    )
 
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.cardColors(containerColor = cardBg),
-        border = BorderStroke(if (isActive) 1.5.dp else 1.dp, borderColor)
+        colors = CardDefaults.cardColors(containerColor = animatedCardBg),
+        border = BorderStroke(if (isActive) 1.5.dp else 1.dp, animatedBorderColor)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .animateContentSize()
                 .padding(14.dp)
         ) {
             // Main Row: Index pill + Name/Weight + Chrono Button
@@ -93,8 +123,8 @@ fun SessionExerciseCard(
                         .size(44.dp)
                         .clip(RoundedCornerShape(12.dp))
                         .background(
-                            if (state.isCompleted) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
-                            else if (isActive) ElectricLime.copy(alpha = 0.2f)
+                            if (state.isCompleted) MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f)
+                            else if (isActive) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
                             else MaterialTheme.colorScheme.surfaceVariant
                         ),
                     contentAlignment = Alignment.Center
@@ -103,7 +133,7 @@ fun SessionExerciseCard(
                         Icon(
                             imageVector = Icons.Default.Check,
                             contentDescription = null,
-                            tint = ElectricLime,
+                            tint = MaterialTheme.colorScheme.secondary,
                             modifier = Modifier.size(24.dp)
                         )
                     } else {
@@ -111,7 +141,7 @@ fun SessionExerciseCard(
                             text = "${exerciseIndex + 1}",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.ExtraBold,
-                            color = if (isActive) ElectricLime else MaterialTheme.colorScheme.onSurface
+                            color = if (isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
@@ -157,7 +187,7 @@ fun SessionExerciseCard(
                     modifier = Modifier
                         .clip(RoundedCornerShape(14.dp))
                         .background(
-                            if (isActive) ElectricLime.copy(alpha = 0.2f)
+                            if (isActive) MaterialTheme.colorScheme.primary.copy(alpha = 0.18f)
                             else MaterialTheme.colorScheme.surfaceVariant
                         )
                         .clickable(onClick = onToggleChrono)
@@ -170,13 +200,14 @@ fun SessionExerciseCard(
                             fontSize = 15.sp
                         ),
                         fontWeight = FontWeight.Bold,
-                        color = if (isActive) ElectricLime else MaterialTheme.colorScheme.onSurface
+                        color = if (isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.alpha(if (state.isChronoRunning) pulseAlpha else 1f)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Icon(
                         imageVector = if (isActive) Icons.Default.Pause else Icons.Default.PlayArrow,
                         contentDescription = if (isActive) "Pause" else "Start",
-                        tint = if (isActive) ElectricLime else MaterialTheme.colorScheme.primary,
+                        tint = if (isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -195,7 +226,7 @@ fun SessionExerciseCard(
                     modifier = Modifier
                         .clip(RoundedCornerShape(10.dp))
                         .background(
-                            if (state.isCompleted) MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)
+                            if (state.isCompleted) MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f)
                             else MaterialTheme.colorScheme.surfaceVariant
                         )
                         .clickable(onClick = onToggleDone)
@@ -206,14 +237,14 @@ fun SessionExerciseCard(
                             imageVector = Icons.Default.Check,
                             contentDescription = null,
                             modifier = Modifier.size(16.dp),
-                            tint = if (state.isCompleted) ElectricLime else MaterialTheme.colorScheme.onSurfaceVariant
+                            tint = if (state.isCompleted) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = stringResource(R.string.session_exercise_done),
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Bold,
-                            color = if (state.isCompleted) ElectricLime else MaterialTheme.colorScheme.onSurfaceVariant
+                            color = if (state.isCompleted) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -245,11 +276,11 @@ fun SessionExerciseCard(
                         .clip(RoundedCornerShape(10.dp))
                         .background(
                             if (state.isRestTimerFinished) IronRed.copy(alpha = 0.25f)
-                            else ElectricLime.copy(alpha = 0.15f)
+                            else MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f)
                         )
                         .border(
                             1.dp,
-                            if (state.isRestTimerFinished) IronRed else ElectricLime,
+                            if (state.isRestTimerFinished) IronRed else MaterialTheme.colorScheme.secondary,
                             RoundedCornerShape(10.dp)
                         )
                         .padding(horizontal = 12.dp, vertical = 8.dp),
@@ -260,7 +291,7 @@ fun SessionExerciseCard(
                         Icon(
                             imageVector = Icons.Default.Timer,
                             contentDescription = null,
-                            tint = if (state.isRestTimerFinished) IronRed else ElectricLime,
+                            tint = if (state.isRestTimerFinished) IronRed else MaterialTheme.colorScheme.secondary,
                             modifier = Modifier.size(18.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
@@ -277,7 +308,7 @@ fun SessionExerciseCard(
                                 fontFamily = FontFamily.Monospace
                             ),
                             fontWeight = FontWeight.Bold,
-                            color = if (state.isRestTimerFinished) IronRed else ElectricLime
+                            color = if (state.isRestTimerFinished) IronRed else MaterialTheme.colorScheme.secondary
                         )
                     }
 

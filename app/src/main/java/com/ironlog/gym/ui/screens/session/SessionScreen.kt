@@ -61,7 +61,6 @@ import com.ironlog.gym.ui.screens.session.components.FinishSessionDialog
 import com.ironlog.gym.ui.screens.session.components.SessionExerciseCard
 import com.ironlog.gym.ui.screens.session.components.SessionTimerDialog
 import com.ironlog.gym.ui.screens.session.components.SessionTopBar
-import com.ironlog.gym.ui.theme.ElectricLime
 import com.ironlog.gym.ui.theme.IronRed
 import java.util.Locale
 
@@ -669,7 +668,7 @@ private fun SessionHeroCard(
                     fontFamily = FontFamily.Monospace
                 ),
                 fontWeight = FontWeight.Black,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.primary
             )
 
             Spacer(modifier = Modifier.height(14.dp))
@@ -695,7 +694,7 @@ private fun SessionHeroCard(
                         imageVector = Icons.Default.Timer,
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
-                        tint = if (isSessionTimerFinished) IronRed else ElectricLime
+                        tint = if (isSessionTimerFinished) IronRed else MaterialTheme.colorScheme.secondary
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(

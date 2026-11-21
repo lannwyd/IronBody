@@ -54,7 +54,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ironlog.gym.R
 import com.ironlog.gym.domain.model.WorkoutSession
-import com.ironlog.gym.ui.theme.ElectricLime
 import com.ironlog.gym.ui.theme.IronRed
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -275,7 +274,7 @@ private fun SessionHistoryCard(
                     Icon(
                         imageVector = Icons.Default.Timer,
                         contentDescription = null,
-                        tint = ElectricLime,
+                        tint = MaterialTheme.colorScheme.secondary,
                         modifier = Modifier.size(13.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))

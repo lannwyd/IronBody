@@ -42,7 +42,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.ironlog.gym.R
 import com.ironlog.gym.ui.screens.session.ExerciseTimerState
-import com.ironlog.gym.ui.theme.ElectricLime
 import java.util.Locale
 
 @Composable
@@ -149,7 +148,7 @@ fun FinishSessionDialog(
                                     Icon(
                                         imageVector = Icons.Default.CheckCircle,
                                         contentDescription = null,
-                                        tint = ElectricLime,
+                                        tint = MaterialTheme.colorScheme.secondary,
                                         modifier = Modifier.size(16.dp)
                                     )
                                     Spacer(modifier = Modifier.width(6.dp))
