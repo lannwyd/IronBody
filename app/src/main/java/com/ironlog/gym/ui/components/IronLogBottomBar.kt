@@ -1,7 +1,9 @@
 package com.ironlog.gym.ui.components
 
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.FitnessCenter
@@ -76,7 +78,7 @@ fun IronLogBottomBar(
     modifier: Modifier = Modifier
 ) {
     NavigationBar(
-        modifier = modifier.height(68.dp),
+        modifier = modifier.windowInsetsPadding(WindowInsets.navigationBars),
         containerColor = MaterialTheme.colorScheme.surface,
         tonalElevation = 8.dp
     ) {

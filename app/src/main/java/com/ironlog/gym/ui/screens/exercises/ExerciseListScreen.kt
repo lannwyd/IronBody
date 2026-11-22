@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.LibraryBooks
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
@@ -61,6 +62,7 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 fun ExerciseListScreen(
     onNavigateToAddExercise: (String?) -> Unit,
     onNavigateToEditExercise: (Long) -> Unit,
+    onNavigateToLibrary: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ExerciseListViewModel = hiltViewModel()
 ) {
@@ -92,6 +94,16 @@ fun ExerciseListScreen(
                 title = stringResource(R.string.app_name),
                 showLogo = true,
                 actions = {
+                    IconButton(
+                        onClick = onNavigateToLibrary,
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.LibraryBooks,
+                            contentDescription = "Browse Exercise Library",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                     IconButton(
                         onClick = themeController.onToggle,
                         modifier = Modifier.size(40.dp)

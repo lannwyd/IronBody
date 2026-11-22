@@ -13,6 +13,7 @@ import androidx.navigation.toRoute
 import com.ironlog.gym.ui.screens.bodyweight.BodyWeightScreen
 import com.ironlog.gym.ui.screens.exerciseEdit.ExerciseEditScreen
 import com.ironlog.gym.ui.screens.exercises.ExerciseListScreen
+import com.ironlog.gym.ui.screens.exercises.library.ExerciseLibraryScreen
 import com.ironlog.gym.ui.screens.session.SessionScreen
 import com.ironlog.gym.ui.screens.session.history.SessionHistoryScreen
 import com.ironlog.gym.ui.screens.splits.SplitsScreen
@@ -54,6 +55,9 @@ fun IronLogNavHost(
                 },
                 onNavigateToEditExercise = { exerciseId ->
                     navController.navigate(Screen.ExerciseEdit(exerciseId = exerciseId))
+                },
+                onNavigateToLibrary = {
+                    navController.navigate(Screen.ExerciseLibrary)
                 }
             )
         }
@@ -118,6 +122,14 @@ fun IronLogNavHost(
 
         composable<Screen.SessionHistory> {
             SessionHistoryScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable<Screen.ExerciseLibrary> {
+            ExerciseLibraryScreen(
                 onNavigateBack = {
                     navController.popBackStack()
                 }

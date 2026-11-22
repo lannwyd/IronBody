@@ -37,4 +37,7 @@ sealed interface Screen {
 
     @Serializable
     data object SessionHistory : Screen
+
+    @Serializable
+    data object ExerciseLibrary : Screen
 }
