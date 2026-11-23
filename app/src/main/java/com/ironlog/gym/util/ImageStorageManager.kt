@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.net.Uri
 import android.media.ExifInterface
+import androidx.annotation.DrawableRes
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -74,6 +75,23 @@ class ImageStorageManager @Inject constructor(
                 out.flush()
             }
 
+            targetFile.absolutePath
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    suspend fun saveImageFromResource(@DrawableRes resId: Int): String? = withContext(Dispatchers.IO) {
+        try {
+            val inputStream = context.resources.openRawResource(resId)
+            val fileName = "img_${UUID.randomUUID()}.jpg"
+            val targetFile = File(imagesDir, fileName)
+            FileOutputStream(targetFile).use { out ->
+                inputStream.copyTo(out)
+                out.flush()
+            }
+            inputStream.close()
             targetFile.absolutePath
         } catch (e: Exception) {
             e.printStackTrace()

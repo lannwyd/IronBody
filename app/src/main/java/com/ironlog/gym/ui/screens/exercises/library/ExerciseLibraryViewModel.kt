@@ -7,6 +7,7 @@ import com.ironlog.gym.domain.model.Exercise
 import com.ironlog.gym.domain.model.LibraryExerciseItem
 import com.ironlog.gym.domain.model.MuscleSection
 import com.ironlog.gym.domain.repository.ExerciseRepository
+import com.ironlog.gym.util.ImageStorageManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,7 +29,8 @@ data class ExerciseLibraryUiState(
 
 @HiltViewModel
 class ExerciseLibraryViewModel @Inject constructor(
-    private val exerciseRepository: ExerciseRepository
+    private val exerciseRepository: ExerciseRepository,
+    private val imageStorageManager: ImageStorageManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ExerciseLibraryUiState())
@@ -68,12 +70,13 @@ class ExerciseLibraryViewModel @Inject constructor(
         val item = state.pendingItem ?: return
         val weight = state.sheetWeight.toFloatOrNull() ?: 0f
         viewModelScope.launch {
+            val savedImagePath = imageStorageManager.saveImageFromResource(item.iconRes)
             exerciseRepository.addExercise(
                 Exercise(
                     name = item.name,
                     weight = weight,
                     unit = state.sheetUnit,
-                    imagePath = null,
+                    imagePath = savedImagePath,
                     sortOrder = 999,
                     createdAt = System.currentTimeMillis(),
                     note = state.sheetNote,

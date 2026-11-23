@@ -24,17 +24,29 @@ import kotlin.math.max
 
 @HiltViewModel
 class TimerViewModel @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val chronometerManager: ChronometerManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TimerUiState())
     val uiState: StateFlow<TimerUiState> = _uiState.asStateFlow()
 
-    private var stopwatchJob: Job? = null
-    private var stopwatchBaseTime: Long = 0L
-
     private var timerJob: Job? = null
     private var timerTargetEndTime: Long = 0L
+
+    init {
+        viewModelScope.launch {
+            chronometerManager.state.collect { chronoState ->
+                _uiState.update {
+                    it.copy(
+                        stopwatchElapsedMs = chronoState.elapsedMs,
+                        isStopwatchRunning = chronoState.isRunning,
+                        laps = chronoState.laps
+                    )
+                }
+            }
+        }
+    }
 
     fun selectTab(tab: TimerTab) {
         _uiState.update { it.copy(selectedTab = tab) }
@@ -45,55 +57,19 @@ class TimerViewModel @Inject constructor(
     // ──────────────────────────────────────────────
 
     fun startStopwatch() {
-        if (_uiState.value.isStopwatchRunning) return
-
-        stopwatchBaseTime = SystemClock.elapsedRealtime() - _uiState.value.stopwatchElapsedMs
-        _uiState.update { it.copy(isStopwatchRunning = true) }
-
-        stopwatchJob = viewModelScope.launch {
-            while (isActive) {
-                val elapsed = SystemClock.elapsedRealtime() - stopwatchBaseTime
-                _uiState.update { it.copy(stopwatchElapsedMs = elapsed) }
-                delay(25) // ~40 FPS updates for ultra-smooth hundredths display
-            }
-        }
+        chronometerManager.start()
     }
 
     fun pauseStopwatch() {
-        stopwatchJob?.cancel()
-        stopwatchJob = null
-        _uiState.update { it.copy(isStopwatchRunning = false) }
+        chronometerManager.pause()
     }
 
     fun resetStopwatch() {
-        stopwatchJob?.cancel()
-        stopwatchJob = null
-        _uiState.update {
-            it.copy(
-                isStopwatchRunning = false,
-                stopwatchElapsedMs = 0L,
-                laps = emptyList()
-            )
-        }
+        chronometerManager.reset()
     }
 
     fun recordLap() {
-        val currentElapsed = _uiState.value.stopwatchElapsedMs
-        if (currentElapsed == 0L) return
-
-        val laps = _uiState.value.laps
-        val previousTotal = laps.firstOrNull()?.totalTimeMs ?: 0L
-        val lapTime = currentElapsed - previousTotal
-
-        val newLap = Lap(
-            lapNumber = laps.size + 1,
-            lapTimeMs = lapTime,
-            totalTimeMs = currentElapsed
-        )
-
-        _uiState.update {
-            it.copy(laps = listOf(newLap) + laps)
-        }
+        chronometerManager.lap()
     }
 
     // ──────────────────────────────────────────────
@@ -276,7 +252,6 @@ class TimerViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        stopwatchJob?.cancel()
         timerJob?.cancel()
     }
 }

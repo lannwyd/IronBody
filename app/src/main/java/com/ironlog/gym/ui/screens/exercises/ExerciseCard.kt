@@ -159,17 +159,26 @@ private fun ExerciseThumbnail(
     imagePath: String?,
     modifier: Modifier = Modifier
 ) {
-    val fileExists = !imagePath.isNullOrBlank() && File(imagePath).exists()
+    val context = LocalContext.current
+    val imageModel: Any? = when {
+        imagePath.isNullOrBlank() -> null
+        File(imagePath).exists() -> File(imagePath)
+        imagePath.startsWith("android.resource://") -> android.net.Uri.parse(imagePath)
+        else -> {
+            val resId = context.resources.getIdentifier(imagePath, "drawable", context.packageName)
+            if (resId != 0) resId else null
+        }
+    }
 
     Box(
         modifier = modifier
             .background(MaterialTheme.colorScheme.surfaceVariant),
         contentAlignment = Alignment.Center
     ) {
-        if (fileExists) {
+        if (imageModel != null) {
             AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(File(imagePath!!))
+                model = ImageRequest.Builder(context)
+                    .data(imageModel)
                     .crossfade(true)
                     .build(),
                 contentDescription = stringResource(R.string.cd_exercise_image),

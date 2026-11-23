@@ -3,6 +3,8 @@ package com.ironlog.gym.ui.screens.exercises
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +15,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -93,17 +97,32 @@ fun ExerciseListScreen(
             IronLogTopAppBar(
                 title = stringResource(R.string.app_name),
                 showLogo = true,
-                actions = {
-                    IconButton(
-                        onClick = onNavigateToLibrary,
-                        modifier = Modifier.size(40.dp)
+                navigationIcon = {
+                    Row(
+                        modifier = Modifier
+                            .padding(start = 12.dp)
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12f))
+                            .clickable(onClick = onNavigateToLibrary)
+                            .padding(horizontal = 10.dp, vertical = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.LibraryBooks,
-                            contentDescription = "Browse Exercise Library",
-                            tint = MaterialTheme.colorScheme.primary
+                            contentDescription = "Exercises list",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Text(
+                            text = "Exercises list",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
+                },
+                actions = {
                     IconButton(
                         onClick = themeController.onToggle,
                         modifier = Modifier.size(40.dp)

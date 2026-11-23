@@ -34,6 +34,7 @@ fun IronLogTopAppBar(
     modifier: Modifier = Modifier,
     showLogo: Boolean = false,
     onBackClick: (() -> Unit)? = null,
+    navigationIcon: (@Composable () -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {}
 ) {
     CenterAlignedTopAppBar(
@@ -62,7 +63,9 @@ fun IronLogTopAppBar(
             }
         },
         navigationIcon = {
-            if (onBackClick != null) {
+            if (navigationIcon != null) {
+                navigationIcon()
+            } else if (onBackClick != null) {
                 IconButton(onClick = onBackClick) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
