@@ -25,29 +25,42 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddPhotoAlternate
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Crop
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.PhotoLibrary
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -57,14 +70,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.ironlog.gym.R
+import com.ironlog.gym.data.library.ExerciseLibrary
 import com.ironlog.gym.domain.model.Exercise
 import com.ironlog.gym.domain.model.MuscleSection
 import com.ironlog.gym.ui.components.IronLogDestructiveButton
 import com.ironlog.gym.ui.components.IronLogPrimaryButton
 import com.ironlog.gym.ui.components.IronLogTopAppBar
 import com.ironlog.gym.ui.components.pressScale
+import com.ironlog.gym.ui.screens.exerciseEdit.components.AdjustImageDialog
 import java.io.File
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExerciseEditScreen(
     onNavigateBack: () -> Unit,
@@ -72,6 +88,26 @@ fun ExerciseEditScreen(
     viewModel: ExerciseEditViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
+    var showAdjustDialog by remember { mutableStateOf(false) }
+    var showSourceChooser by remember { mutableStateOf(false) }
+    var showLibraryPicker by remember { mutableStateOf(false) }
+    var librarySearchQuery by remember { mutableStateOf("") }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    val imageModel: Any? = remember(uiState.imagePath) {
+        val path = uiState.imagePath
+        when {
+            path.isNullOrBlank() -> null
+            File(path).exists() -> File(path)
+            path.startsWith("android.resource://") -> android.net.Uri.parse(path)
+            else -> {
+                val resId = context.resources.getIdentifier(path, "drawable", context.packageName)
+                if (resId != 0) resId else null
+            }
+        }
+    }
 
     // Navigate back when saved or deleted
     LaunchedEffect(uiState.isSaved) {
@@ -125,17 +161,18 @@ fun ExerciseEditScreen(
                     .clip(MaterialTheme.shapes.large)
                     .background(MaterialTheme.colorScheme.surfaceVariant)
                     .pressScale(onClick = {
-                        photoPickerLauncher.launch(
-                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                        )
+                        if (imageModel != null) {
+                            showAdjustDialog = true
+                        } else {
+                            showSourceChooser = true
+                        }
                     }),
                 contentAlignment = Alignment.Center
             ) {
-                val imageFile = uiState.imagePath?.let { File(it) }
-                if (imageFile != null && imageFile.exists()) {
+                if (imageModel != null) {
                     AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data(imageFile)
+                        model = ImageRequest.Builder(context)
+                            .data(imageModel)
                             .crossfade(true)
                             .build(),
                         contentDescription = stringResource(R.string.cd_exercise_image),
@@ -161,15 +198,45 @@ fun ExerciseEditScreen(
                         )
                     }
 
+                    // Adjust button
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .padding(12.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(
+                                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f)
+                            )
+                            .clickable { showAdjustDialog = true }
+                            .padding(horizontal = 12.dp, vertical = 6.dp)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.Crop,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "Adjust",
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
+
                     // Change overlay button
                     Box(
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .padding(12.dp)
+                            .clip(RoundedCornerShape(10.dp))
                             .background(
-                                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f),
-                                shape = RoundedCornerShape(10.dp)
+                                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f)
                             )
+                            .clickable { showSourceChooser = true }
                             .padding(horizontal = 12.dp, vertical = 6.dp)
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -183,6 +250,7 @@ fun ExerciseEditScreen(
                             Text(
                                 text = stringResource(R.string.action_change_photo),
                                 style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                         }
@@ -381,6 +449,199 @@ fun ExerciseEditScreen(
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
+                }
+            }
+        }
+    }
+
+    if (showAdjustDialog && !uiState.imagePath.isNullOrBlank()) {
+        AdjustImageDialog(
+            imagePath = uiState.imagePath!!,
+            onDismiss = { showAdjustDialog = false },
+            onApply = { scale, panX, panY, rotation, w, h ->
+                viewModel.onApplyImageAdjustment(scale, panX, panY, rotation, w, h)
+                showAdjustDialog = false
+            }
+        )
+    }
+
+    if (showSourceChooser) {
+        ModalBottomSheet(
+            onDismissRequest = { showSourceChooser = false },
+            sheetState = sheetState,
+            dragHandle = { BottomSheetDefaults.DragHandle() }
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp, vertical = 12.dp)
+                    .padding(bottom = 32.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(
+                    text = "Select Photo Source",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            showSourceChooser = false
+                            showLibraryPicker = true
+                        },
+                    shape = RoundedCornerShape(14.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PhotoLibrary,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(28.dp)
+                        )
+                        Column {
+                            Text(
+                                text = "Choose from Exercise Library",
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Text(
+                                text = "102 demonstration photos across all muscle groups",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            showSourceChooser = false
+                            photoPickerLauncher.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            )
+                        },
+                    shape = RoundedCornerShape(14.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Image,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(28.dp)
+                        )
+                        Column {
+                            Text(
+                                text = "Upload from Photos / Gallery",
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Text(
+                                text = "Choose a custom machine or workout photo",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (showLibraryPicker) {
+        ModalBottomSheet(
+            onDismissRequest = { showLibraryPicker = false },
+            sheetState = sheetState,
+            dragHandle = { BottomSheetDefaults.DragHandle() }
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 8.dp)
+                    .padding(bottom = 24.dp)
+            ) {
+                Text(
+                    text = "Pick Demonstration Photo",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+
+                OutlinedTextField(
+                    value = librarySearchQuery,
+                    onValueChange = { librarySearchQuery = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = { Text("Search exercises...") },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp)
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                val filtered = remember(librarySearchQuery) {
+                    ExerciseLibrary.filteredBy(null, librarySearchQuery)
+                }
+
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(380.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(filtered, key = { it.name }) { item ->
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    viewModel.onLibraryImageSelected(item.iconRes)
+                                    showLibraryPicker = false
+                                },
+                            shape = RoundedCornerShape(10.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(10.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                androidx.compose.foundation.Image(
+                                    painter = painterResource(item.iconRes),
+                                    contentDescription = item.name,
+                                    modifier = Modifier
+                                        .size(width = 64.dp, height = 44.dp)
+                                        .clip(RoundedCornerShape(6.dp)),
+                                    contentScale = ContentScale.Crop
+                                )
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = item.name,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                    Text(
+                                        text = item.section.displayName,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.secondary
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

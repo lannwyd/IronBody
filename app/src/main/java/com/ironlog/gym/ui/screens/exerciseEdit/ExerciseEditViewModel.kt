@@ -11,6 +11,7 @@ import com.ironlog.gym.domain.repository.ExerciseRepository
 import com.ironlog.gym.util.ImageStorageManager
 import com.ironlog.gym.util.WeightFormatter
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.io.File
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -128,6 +129,53 @@ class ExerciseEditViewModel @Inject constructor(
             }
         }
         _uiState.update { it.copy(imagePath = null) }
+    }
+
+    fun onApplyImageAdjustment(
+        scale: Float,
+        panX: Float,
+        panY: Float,
+        rotation: Float,
+        viewW: Int,
+        viewH: Int
+    ) {
+        val currentPath = _uiState.value.imagePath ?: return
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            val adjustedPath = imageStorageManager.saveAdjustedBitmap(
+                sourcePath = currentPath,
+                scale = scale,
+                panX = panX,
+                panY = panY,
+                rotationDegrees = rotation,
+                viewportWidth = viewW,
+                viewportHeight = viewH
+            )
+            if (adjustedPath != null) {
+                if (currentPath != adjustedPath && File(currentPath).exists()) {
+                    imageStorageManager.deleteImageFile(currentPath)
+                }
+                _uiState.update { it.copy(imagePath = adjustedPath, isLoading = false) }
+            } else {
+                _uiState.update { it.copy(isLoading = false) }
+            }
+        }
+    }
+
+    fun onLibraryImageSelected(resId: Int) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            val savedPath = imageStorageManager.saveImageFromResource(resId)
+            if (savedPath != null) {
+                val oldPath = _uiState.value.imagePath
+                if (!oldPath.isNullOrBlank() && oldPath != savedPath) {
+                    imageStorageManager.deleteImageFile(oldPath)
+                }
+                _uiState.update { it.copy(imagePath = savedPath, isLoading = false) }
+            } else {
+                _uiState.update { it.copy(isLoading = false) }
+            }
+        }
     }
 
     fun onSaveExercise() {

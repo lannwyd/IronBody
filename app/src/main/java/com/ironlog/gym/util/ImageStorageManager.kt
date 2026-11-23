@@ -99,6 +99,64 @@ class ImageStorageManager @Inject constructor(
         }
     }
 
+    suspend fun saveAdjustedBitmap(
+        sourcePath: String,
+        scale: Float,
+        panX: Float,
+        panY: Float,
+        rotationDegrees: Float,
+        viewportWidth: Int,
+        viewportHeight: Int
+    ): String? = withContext(Dispatchers.IO) {
+        try {
+            val file = File(sourcePath)
+            val original = if (file.exists()) {
+                BitmapFactory.decodeFile(file.absolutePath)
+            } else {
+                val resId = context.resources.getIdentifier(sourcePath, "drawable", context.packageName)
+                if (resId != 0) BitmapFactory.decodeResource(context.resources, resId) else null
+            } ?: return@withContext null
+
+            val outW = 800
+            val outH = if (viewportWidth > 0 && viewportHeight > 0) {
+                (outW * (viewportHeight.toFloat() / viewportWidth.toFloat())).toInt()
+            } else 500
+
+            val resultBitmap = Bitmap.createBitmap(outW, outH, Bitmap.Config.ARGB_8888)
+            val canvas = android.graphics.Canvas(resultBitmap)
+
+            val viewToOutScale = outW.toFloat() / viewportWidth.toFloat()
+
+            val matrix = Matrix()
+            matrix.postTranslate(-original.width / 2f, -original.height / 2f)
+            matrix.postRotate(rotationDegrees)
+            val baseScale = maxOf(
+                viewportWidth.toFloat() / original.width.toFloat(),
+                viewportHeight.toFloat() / original.height.toFloat()
+            )
+            val totalScale = baseScale * scale
+            matrix.postScale(totalScale, totalScale)
+            matrix.postTranslate(viewportWidth / 2f + panX, viewportHeight / 2f + panY)
+            matrix.postScale(viewToOutScale, viewToOutScale)
+
+            val paint = android.graphics.Paint(android.graphics.Paint.FILTER_BITMAP_FLAG or android.graphics.Paint.ANTI_ALIAS_FLAG)
+            canvas.drawBitmap(original, matrix, paint)
+
+            val fileName = "img_${UUID.randomUUID()}.jpg"
+            val targetFile = File(imagesDir, fileName)
+            FileOutputStream(targetFile).use { out ->
+                resultBitmap.compress(Bitmap.CompressFormat.JPEG, 88, out)
+                out.flush()
+            }
+            original.recycle()
+            resultBitmap.recycle()
+            targetFile.absolutePath
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
     suspend fun deleteImageFile(path: String?): Boolean = withContext(Dispatchers.IO) {
         if (path.isNullOrBlank()) return@withContext false
         try {

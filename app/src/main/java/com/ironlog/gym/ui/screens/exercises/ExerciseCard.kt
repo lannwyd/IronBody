@@ -51,6 +51,7 @@ fun ExerciseCard(
     onDecreaseWeight: () -> Unit,
     dragModifier: Modifier = Modifier,
     isDragging: Boolean = false,
+    onThumbnailClick: ((Exercise) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val elevation = if (isDragging) 12.dp else 0.dp
@@ -83,6 +84,11 @@ fun ExerciseCard(
                 modifier = Modifier
                     .size(64.dp)
                     .clip(RoundedCornerShape(16.dp))
+                    .then(
+                        if (!exercise.imagePath.isNullOrBlank() && onThumbnailClick != null) {
+                            Modifier.clickable { onThumbnailClick(exercise) }
+                        } else Modifier
+                    )
             )
 
             Spacer(modifier = Modifier.width(14.dp))

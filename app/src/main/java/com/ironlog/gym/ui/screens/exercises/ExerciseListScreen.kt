@@ -42,7 +42,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -52,8 +54,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ironlog.gym.R
+import com.ironlog.gym.domain.model.Exercise
 import com.ironlog.gym.domain.model.MuscleSection
 import com.ironlog.gym.ui.components.ExerciseEmptyState
+import com.ironlog.gym.ui.components.FullScreenImageViewer
 import com.ironlog.gym.ui.components.IronLogTopAppBar
 import com.ironlog.gym.ui.components.SearchAndFilterBar
 import com.ironlog.gym.ui.components.pressScale
@@ -73,6 +77,7 @@ fun ExerciseListScreen(
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
+    var previewExercise by remember { mutableStateOf<Exercise?>(null) }
 
     // Observe deletion to trigger Undo Snackbar
     LaunchedEffect(uiState.recentlyDeletedExercise) {
@@ -248,7 +253,8 @@ fun ExerciseListScreen(
                                                 exercise = exercise,
                                                 onClick = { onNavigateToEditExercise(exercise.id) },
                                                 onIncreaseWeight = { viewModel.onIncreaseWeight(exercise) },
-                                                onDecreaseWeight = { viewModel.onDecreaseWeight(exercise) }
+                                                onDecreaseWeight = { viewModel.onDecreaseWeight(exercise) },
+                                                onThumbnailClick = { previewExercise = it }
                                             )
                                         }
                                     }
@@ -291,6 +297,7 @@ fun ExerciseListScreen(
                                             onClick = { onNavigateToEditExercise(exercise.id) },
                                             onIncreaseWeight = { viewModel.onIncreaseWeight(exercise) },
                                             onDecreaseWeight = { viewModel.onDecreaseWeight(exercise) },
+                                            onThumbnailClick = { previewExercise = it },
                                             dragModifier = Modifier.draggableHandle(),
                                             isDragging = isDragging
                                         )
@@ -302,5 +309,12 @@ fun ExerciseListScreen(
                 }
             }
         }
+    }
+
+    previewExercise?.let { exercise ->
+        FullScreenImageViewer(
+            exercise = exercise,
+            onDismiss = { previewExercise = null }
+        )
     }
 }
