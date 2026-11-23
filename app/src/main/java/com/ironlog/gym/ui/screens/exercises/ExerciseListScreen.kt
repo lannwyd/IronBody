@@ -24,6 +24,9 @@ import androidx.compose.material.icons.automirrored.filled.LibraryBooks
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -37,6 +40,7 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -78,6 +82,7 @@ fun ExerciseListScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
     var previewExercise by remember { mutableStateOf<Exercise?>(null) }
+    var exerciseToDelete by remember { mutableStateOf<Exercise?>(null) }
 
     // Observe deletion to trigger Undo Snackbar
     LaunchedEffect(uiState.recentlyDeletedExercise) {
@@ -234,8 +239,8 @@ fun ExerciseListScreen(
                                                 if (dismissValue == SwipeToDismissBoxValue.EndToStart ||
                                                     dismissValue == SwipeToDismissBoxValue.StartToEnd
                                                 ) {
-                                                    viewModel.onDeleteExercise(exercise)
-                                                    true
+                                                    exerciseToDelete = exercise
+                                                    false
                                                 } else {
                                                     false
                                                 }
@@ -275,8 +280,8 @@ fun ExerciseListScreen(
                                             if (dismissValue == SwipeToDismissBoxValue.EndToStart ||
                                                 dismissValue == SwipeToDismissBoxValue.StartToEnd
                                             ) {
-                                                viewModel.onDeleteExercise(exercise)
-                                                true
+                                                exerciseToDelete = exercise
+                                                false
                                             } else {
                                                 false
                                             }
@@ -315,6 +320,49 @@ fun ExerciseListScreen(
         FullScreenImageViewer(
             exercise = exercise,
             onDismiss = { previewExercise = null }
+        )
+    }
+
+    val toDelete = exerciseToDelete
+    if (toDelete != null) {
+        AlertDialog(
+            onDismissRequest = { exerciseToDelete = null },
+            title = {
+                Text(
+                    text = stringResource(R.string.dialog_delete_exercise_title),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Text(
+                    text = stringResource(R.string.dialog_delete_exercise_message, toDelete.name),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        val ex = toDelete
+                        exerciseToDelete = null
+                        viewModel.onDeleteExercise(ex)
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error,
+                        contentColor = MaterialTheme.colorScheme.onError
+                    )
+                ) {
+                    Text(
+                        text = stringResource(R.string.action_delete),
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { exerciseToDelete = null }) {
+                    Text(text = stringResource(R.string.action_cancel))
+                }
+            }
         )
     }
 }

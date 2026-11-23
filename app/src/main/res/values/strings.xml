@@ -42,6 +42,8 @@
     <string name="action_save">Save</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_delete">Delete</string>
+    <string name="dialog_delete_exercise_title">Delete Exercise?</string>
+    <string name="dialog_delete_exercise_message">Are you sure you want to delete \"%1$s\"? This action cannot be undone.</string>
 
     <!-- Form Validation Errors -->
     <string name="error_empty_name">Please enter an exercise name</string>

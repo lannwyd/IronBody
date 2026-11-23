@@ -30,7 +30,10 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.PhotoLibrary
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -45,6 +48,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -93,6 +97,7 @@ fun ExerciseEditScreen(
     var showAdjustDialog by remember { mutableStateOf(false) }
     var showSourceChooser by remember { mutableStateOf(false) }
     var showLibraryPicker by remember { mutableStateOf(false) }
+    var showDeleteConfirmationDialog by remember { mutableStateOf(false) }
     var librarySearchQuery by remember { mutableStateOf("") }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
@@ -133,7 +138,7 @@ fun ExerciseEditScreen(
                 onBackClick = onNavigateBack,
                 actions = {
                     if (uiState.isEditMode) {
-                        IconButton(onClick = viewModel::onDeleteExercise) {
+                        IconButton(onClick = { showDeleteConfirmationDialog = true }) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
                                 contentDescription = stringResource(R.string.action_delete),
@@ -441,7 +446,7 @@ fun ExerciseEditScreen(
 
             if (uiState.isEditMode) {
                 IronLogDestructiveButton(
-                    onClick = viewModel::onDeleteExercise,
+                    onClick = { showDeleteConfirmationDialog = true },
                     enabled = !uiState.isLoading
                 ) {
                     Text(
@@ -452,6 +457,50 @@ fun ExerciseEditScreen(
                 }
             }
         }
+    }
+
+    if (showDeleteConfirmationDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirmationDialog = false },
+            title = {
+                Text(
+                    text = stringResource(R.string.dialog_delete_exercise_title),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Text(
+                    text = stringResource(
+                        R.string.dialog_delete_exercise_message,
+                        uiState.name.ifBlank { stringResource(R.string.screen_edit_exercise_title) }
+                    ),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showDeleteConfirmationDialog = false
+                        viewModel.onDeleteExercise()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error,
+                        contentColor = MaterialTheme.colorScheme.onError
+                    )
+                ) {
+                    Text(
+                        text = stringResource(R.string.action_delete),
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteConfirmationDialog = false }) {
+                    Text(text = stringResource(R.string.action_cancel))
+                }
+            }
+        )
     }
 
     if (showAdjustDialog && !uiState.imagePath.isNullOrBlank()) {
