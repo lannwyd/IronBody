@@ -70,7 +70,7 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 fun ExerciseListScreen(
     onNavigateToAddExercise: (String?) -> Unit,
     onNavigateToEditExercise: (Long) -> Unit,
-    onNavigateToLibrary: () -> Unit = {},
+    onNavigateToLibrary: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ExerciseListViewModel = hiltViewModel()
 ) {
@@ -102,6 +102,31 @@ fun ExerciseListScreen(
             IronLogTopAppBar(
                 title = stringResource(R.string.app_name),
                 showLogo = true,
+                navigationIcon = {
+                    Row(
+                        modifier = Modifier
+                            .padding(start = 12.dp)
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12f))
+                            .clickable(onClick = onNavigateToLibrary)
+                            .padding(horizontal = 10.dp, vertical = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.LibraryBooks,
+                            contentDescription = "Exercises list",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Text(
+                            text = "Exercises list",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                },
                 actions = {
                     IconButton(
                         onClick = themeController.onToggle,

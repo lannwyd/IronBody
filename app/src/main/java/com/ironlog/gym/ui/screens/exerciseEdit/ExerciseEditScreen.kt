@@ -78,7 +78,6 @@ import com.ironlog.gym.ui.components.IronLogPrimaryButton
 import com.ironlog.gym.ui.components.IronLogTopAppBar
 import com.ironlog.gym.ui.components.pressScale
 import com.ironlog.gym.ui.screens.exerciseEdit.components.AdjustImageDialog
-import com.ironlog.gym.ui.screens.exerciseEdit.components.ReadyExercisesSection
 import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -276,16 +275,6 @@ fun ExerciseEditScreen(
                         )
                     }
                 }
-            }
-
-            // Ready Exercises Horizontal Carousel (Templates)
-            if (!uiState.isEditMode) {
-                ReadyExercisesSection(
-                    currentExerciseName = uiState.name,
-                    currentSectionId = uiState.section,
-                    initialSectionId = uiState.section,
-                    onSelectExercise = viewModel::onSelectLibraryExercise
-                )
             }
 
             // Exercise Name Input

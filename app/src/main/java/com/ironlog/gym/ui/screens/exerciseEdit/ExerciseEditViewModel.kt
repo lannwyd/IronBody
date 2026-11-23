@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.ironlog.gym.R
 import com.ironlog.gym.data.datastore.UserPreferencesDataStore
 import com.ironlog.gym.domain.model.Exercise
-import com.ironlog.gym.domain.model.LibraryExerciseItem
 import com.ironlog.gym.domain.repository.ExerciseRepository
 import com.ironlog.gym.util.ImageStorageManager
 import com.ironlog.gym.util.WeightFormatter
@@ -175,37 +174,6 @@ class ExerciseEditViewModel @Inject constructor(
                 _uiState.update { it.copy(imagePath = savedPath, isLoading = false) }
             } else {
                 _uiState.update { it.copy(isLoading = false) }
-            }
-        }
-    }
-
-    fun onSelectLibraryExercise(item: LibraryExerciseItem) {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            val savedPath = imageStorageManager.saveImageFromResource(item.iconRes)
-            if (savedPath != null) {
-                val oldPath = _uiState.value.imagePath
-                if (!oldPath.isNullOrBlank() && oldPath != savedPath) {
-                    imageStorageManager.deleteImageFile(oldPath)
-                }
-                _uiState.update {
-                    it.copy(
-                        name = item.name,
-                        nameError = null,
-                        section = item.section.id,
-                        imagePath = savedPath,
-                        isLoading = false
-                    )
-                }
-            } else {
-                _uiState.update {
-                    it.copy(
-                        name = item.name,
-                        nameError = null,
-                        section = item.section.id,
-                        isLoading = false
-                    )
-                }
             }
         }
     }
